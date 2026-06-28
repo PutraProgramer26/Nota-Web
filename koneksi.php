@@ -2,10 +2,9 @@
 // koneksi.php
 // Buat koneksi ke database MySQL dengan nama database nota_web
 
-$host = 'localhost';
-$username = 'root';
-$password = '';
-$database = 'nota_web';
+$username = 'u170828859_putra';
+$password = 'Programer260705';
+$database = 'u170828859_Nota_Web';
 
 $conn = mysqli_connect($host, $username, $password, $database);
 
