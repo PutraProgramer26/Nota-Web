@@ -25,8 +25,26 @@ mysqli_query($conn, "
 
 $message = '';
 $editData = null;
+if (isset($_GET['msg'])) {
+    $message = trim($_GET['msg']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['delete_id'])) {
+        $deleteId = (int)$_POST['delete_id'];
+        if ($deleteId > 0) {
+            if ($deleteId === ($_SESSION['user_id'] ?? 0)) {
+                header('Location: manajement_user.php?msg=' . urlencode('Anda tidak dapat menghapus akun sendiri.'));
+                exit;
+            }
+            $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE id = ?");
+            mysqli_stmt_bind_param($stmt, 'i', $deleteId);
+            mysqli_stmt_execute($stmt);
+            header('Location: manajement_user.php?msg=' . urlencode('User berhasil dihapus.'));
+            exit;
+        }
+    }
+
     $id = (int)($_POST['id'] ?? 0);
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
@@ -45,7 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_bind_param($stmt, 'ssi', $username, $role, $id);
             }
             mysqli_stmt_execute($stmt);
-            $message = 'Data user berhasil diperbarui.';
+            header('Location: manajement_user.php?msg=' . urlencode('Data user berhasil diperbarui.'));
+            exit;
         } else {
             if ($password === '') {
                 $message = 'Password wajib diisi untuk user baru.';
@@ -54,13 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = mysqli_prepare($conn, "INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
                 mysqli_stmt_bind_param($stmt, 'sss', $username, $hash, $role);
                 mysqli_stmt_execute($stmt);
-                $message = 'User berhasil ditambahkan.';
+                header('Location: manajement_user.php?msg=' . urlencode('User berhasil ditambahkan.'));
+                exit;
             }
-        }
-
-        if ($message === 'Data user berhasil diperbarui.' || $message === 'User berhasil ditambahkan.') {
-            header('Location: manajement_user.php');
-            exit;
         }
     }
 }
@@ -162,6 +177,14 @@ $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                         <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                                         <td>
                                             <a href="manajement_user.php?edit_id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                                            <?php if ($row['id'] !== ($_SESSION['user_id'] ?? 0)) : ?>
+                                                <form method="post" class="d-inline ms-1" onsubmit="return confirm('Hapus user ini?');">
+                                                    <input type="hidden" name="delete_id" value="<?php echo $row['id']; ?>" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                                </form>
+                                            <?php else : ?>
+                                                <span class="text-muted small ms-2">Sedang login</span>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
