@@ -1,5 +1,6 @@
 <?php
 $currentPage = $currentPage ?? basename($_SERVER['PHP_SELF']);
+$userRole = $_SESSION['role'] ?? 'user';
 function sidebarLink($page, $icon, $label) {
     global $currentPage;
     $active = $currentPage === $page ? ' active' : '';
@@ -24,7 +25,9 @@ function sidebarLink($page, $icon, $label) {
         <?php echo sidebarLink('lihat_nota.php', '▤', 'Lihat Nota'); ?>
         <?php echo sidebarLink('rekap_nota.php', '◫', 'Rekap Nota'); ?>
         <?php echo sidebarLink('pengaturan_project.php', '⚙', 'Pengaturan Project'); ?>
-        <?php echo sidebarLink('manajement_user.php', '👤', 'Manajement User'); ?>
+        <?php if ($userRole === 'superadmin'): ?>
+            <?php echo sidebarLink('manajement_user.php', '👤', 'Manajement User'); ?>
+        <?php endif; ?>
         <div class="nav-section-label mt-2">Akun</div>
         <a class="nav-link text-danger" href="logout.php"><span class="nav-icon">↩</span><span class="nav-text">Log Out</span></a>
     </nav>

@@ -5,6 +5,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+if (($_SESSION['role'] ?? 'user') !== 'superadmin') {
+    header('Location: index.php');
+    exit;
+}
+
 include 'koneksi.php';
 
 mysqli_query($conn, "
