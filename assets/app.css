@@ -47,6 +47,26 @@ a { text-decoration: none; }
   border-bottom: 1px solid rgba(255,255,255,0.12);
   gap: 10px;
 }
+.sidebar-account {
+  padding: 16px 16px 0;
+  color: #cbd5e1;
+}
+.account-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: #94a3b8;
+}
+.account-user {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.account-role {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -222,4 +242,3 @@ a { text-decoration: none; }
   .btn-group { width: 100%; }
   .btn-group .btn { flex: 1 1 auto; }
 }
-

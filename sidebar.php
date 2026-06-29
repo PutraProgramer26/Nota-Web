@@ -1,6 +1,7 @@
 <?php
 $currentPage = $currentPage ?? basename($_SERVER['PHP_SELF']);
 $userRole = $_SESSION['role'] ?? 'user';
+$username = $_SESSION['username'] ?? 'Tidak Diketahui';
 function sidebarLink($page, $icon, $label) {
     global $currentPage;
     $active = $currentPage === $page ? ' active' : '';
@@ -17,6 +18,11 @@ function sidebarLink($page, $icon, $label) {
             </div>
         </div>
         <button class="sidebar-toggle" id="toggleSidebar" type="button" aria-label="Toggle sidebar">☰</button>
+    </div>
+    <div class="sidebar-account px-3 pb-2">
+        <div class="account-label">Login sebagai</div>
+        <div class="account-user"><?php echo htmlspecialchars($username); ?></div>
+        <div class="account-role"><?php echo ucfirst(htmlspecialchars($userRole)); ?></div>
     </div>
     <nav class="nav flex-column mt-2">
         <div class="nav-section-label">Menu utama</div>
