@@ -20,9 +20,14 @@ function sidebarLink($page, $icon, $label) {
         <button class="sidebar-toggle" id="toggleSidebar" type="button" aria-label="Toggle sidebar">☰</button>
     </div>
     <div class="sidebar-account px-3 pb-2">
-        <div class="account-label">Login sebagai</div>
-        <div class="account-user"><?php echo htmlspecialchars($username); ?></div>
-        <div class="account-role"><?php echo ucfirst(htmlspecialchars($userRole)); ?></div>
+        <div class="account-card">
+            <div class="account-avatar"><?php echo htmlspecialchars(strtoupper(substr($username, 0, 1))); ?></div>
+            <div class="account-info">
+                <div class="account-label">Login sebagai</div>
+                <div class="account-user"><?php echo htmlspecialchars($username); ?></div>
+                <div class="account-role"><?php echo ucfirst(htmlspecialchars($userRole)); ?></div>
+            </div>
+        </div>
     </div>
     <nav class="nav flex-column mt-2">
         <div class="nav-section-label">Menu utama</div>
