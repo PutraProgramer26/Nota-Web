@@ -29,6 +29,7 @@ $notaLogCount = 0;
 $notaPerProject = [];
 $projectPerToko = [];
 $historyLog = [];
+$registerGrandTotals = [];
 
 if (tableExists($conn, $notaTable)) {
     $projectCount = fetchOne($conn, "SELECT COUNT(DISTINCT project) AS total_projects FROM {$notaTable}")['total_projects'] ?? 0;
@@ -48,6 +49,14 @@ if (tableExists($conn, $notaTable)) {
         FROM {$notaTable}
         ORDER BY tanggal_belanja DESC, id DESC
         LIMIT 50");
+
+    foreach ($historyLog as $row) {
+        $registerKey = (string)($row['no_register'] ?? '');
+        if ($registerKey === '') {
+            $registerKey = '__empty__';
+        }
+        $registerGrandTotals[$registerKey] = ($registerGrandTotals[$registerKey] ?? 0) + (float)($row['total'] ?? 0);
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -168,6 +177,7 @@ if (tableExists($conn, $notaTable)) {
                             <th>Project</th>
                             <th>Toko</th>
                             <th>Total</th>
+                            <th>Grand Total Nota</th>
                             <th>Pemesan</th>
                             <th>Keterangan</th>
                         </tr>
@@ -175,7 +185,7 @@ if (tableExists($conn, $notaTable)) {
                     <tbody>
                         <?php if (count($historyLog) === 0): ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Belum ada data nota.</td>
+                                <td colspan="9" class="text-center text-muted">Belum ada data nota.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyLog as $row): ?>
@@ -187,6 +197,13 @@ if (tableExists($conn, $notaTable)) {
                                     <td><?php echo htmlspecialchars($row['project_name']); ?></td>
                                     <td><?php echo htmlspecialchars($row['toko_name']); ?></td>
                                     <td><?php echo htmlspecialchars(number_format($row['total'] ?? 0, 0, ',', '.')); ?></td>
+                                    <?php
+                                    $registerKey = (string)($row['no_register'] ?? '');
+                                    if ($registerKey === '') {
+                                        $registerKey = '__empty__';
+                                    }
+                                    ?>
+                                    <td>Rp <?php echo htmlspecialchars(number_format($registerGrandTotals[$registerKey] ?? 0, 0, ',', '.')); ?></td>
                                     <td><?php echo htmlspecialchars($row['pemesan']); ?></td>
                                     <td><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
                                 </tr>
