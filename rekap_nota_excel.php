@@ -85,29 +85,34 @@ header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
-$header = ['No Register', 'Tanggal', 'Project', 'Toko', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
+$header = ['No Register', 'Tanggal', 'Project', 'Toko', 'Rincian Material', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 
 foreach ($notaSummaries as $summary) {
-    $itemCount = count($summary['items']);
-    foreach ($summary['items'] as $index => $item) {
-        fputcsv($output, [
-            $index === 0 ? ($summary['no_register'] ?: '-') : '',
-            $index === 0 ? (!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : '',
-            $index === 0 ? ($summary['project'] ?: '-') : '',
-            $index === 0 ? ($summary['nama_toko'] ?: '-') : '',
+    $materialDetail = [];
+    foreach ($summary['items'] as $item) {
+        $materialDetail[] = sprintf(
+            '%s | Qty: %s %s | Harga: Rp %s | Total: Rp %s',
             $item['nama_barang'] ?: '-',
             $item['jumlah_barang'] ?? 0,
             $item['satuan_barang'] ?: '-',
             number_format($item['harga_barang'] ?? 0, 0, '.', ','),
-            number_format($item['total_harga'] ?? 0, 0, '.', ','),
-            $index === 0 ? number_format($summary['grand_total'] ?? 0, 0, '.', ',') : '',
-            $index === 0 ? ($summary['pemesan'] ?: '-') : '',
-            $index === 0 ? ($summary['keterangan'] ?? '-') : ''
-        ], "\t");
+            number_format($item['total_harga'] ?? 0, 0, '.', ',')
+        );
     }
+
+    fputcsv($output, [
+        $summary['no_register'] ?: '-',
+        !empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-',
+        $summary['project'] ?: '-',
+        $summary['nama_toko'] ?: '-',
+        implode("; ", $materialDetail),
+        number_format($summary['grand_total'] ?? 0, 0, '.', ','),
+        $summary['pemesan'] ?: '-',
+        $summary['keterangan'] ?? '-'
+    ], "\t");
 }
 
-fputcsv($output, ['', '', '', '', '', '', '', '', '', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
+fputcsv($output, ['', '', '', '', 'TOTAL KESELURUHAN', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
 
 fclose($output);
