@@ -80,56 +80,33 @@ foreach ($rows as $row) {
     ];
 }
 $notaSummaries = array_values($notaSummaries);
-$maxMaterialCount = 0;
-foreach ($notaSummaries as $summary) {
-    $maxMaterialCount = max($maxMaterialCount, count($summary['items']));
-}
-$materialColumnHeaders = [];
-for ($i = 0; $i < $maxMaterialCount; $i++) {
-    $materialColumnHeaders[] = 'Barang ' . ($i + 1);
-}
 
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
-$header = array_merge(['No Register', 'Tanggal', 'Project', 'Toko'], $materialColumnHeaders, ['Grand Total', 'Order By', 'Keterangan']);
+$header = ['No Register', 'Tanggal', 'Project', 'Toko', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 
 foreach ($notaSummaries as $summary) {
-    $row = [
-        $summary['no_register'] ?: '-',
-        !empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-',
-        $summary['project'] ?: '-',
-        $summary['nama_toko'] ?: '-',
-    ];
-
-    foreach ($materialColumnHeaders as $index => $header) {
-        if (!empty($summary['items'][$index])) {
-            $item = $summary['items'][$index];
-            $row[] = sprintf(
-                'Nama: %s | Qty: %s %s | Harga: Rp %s | Total: Rp %s',
-                $item['nama_barang'] ?: '-',
-                $item['jumlah_barang'] ?? 0,
-                $item['satuan_barang'] ?: '-',
-                number_format($item['harga_barang'] ?? 0, 0, '.', ','),
-                number_format($item['total_harga'] ?? 0, 0, '.', ',')
-            );
-        } else {
-            $row[] = '';
-        }
+    foreach ($summary['items'] as $index => $item) {
+        fputcsv($output, [
+            $index === 0 ? ($summary['no_register'] ?: '-') : '',
+            $index === 0 ? (!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : '',
+            $index === 0 ? ($summary['project'] ?: '-') : '',
+            $index === 0 ? ($summary['nama_toko'] ?: '-') : '',
+            $item['nama_barang'] ?: '-',
+            $item['jumlah_barang'] ?? 0,
+            $item['satuan_barang'] ?: '-',
+            number_format($item['harga_barang'] ?? 0, 0, '.', ','),
+            number_format($item['total_harga'] ?? 0, 0, '.', ','),
+            $index === 0 ? number_format($summary['grand_total'] ?? 0, 0, '.', ',') : '',
+            $index === 0 ? ($summary['pemesan'] ?: '-') : '',
+            $index === 0 ? ($summary['keterangan'] ?? '-') : ''
+        ], "\t");
     }
-
-    $row[] = number_format($summary['grand_total'] ?? 0, 0, '.', ',');
-    $row[] = $summary['pemesan'] ?: '-';
-    $row[] = $summary['keterangan'] ?? '-';
-    fputcsv($output, $row, "\t");
 }
 
-$totalsRow = array_fill(0, 4 + count($materialColumnHeaders), '');
-$totalsRow[] = number_format($grandTotal, 0, '.', ',');
-$totalsRow[] = '';
-$totalsRow[] = '';
-fputcsv($output, $totalsRow, "\t");
+fputcsv($output, ['', '', '', '', '', '', '', '', '', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
 
 fclose($output);
