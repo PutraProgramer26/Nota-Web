@@ -47,28 +47,72 @@ if (!empty($params)) {
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$grandTotal = 0;
+$notaSummaries = [];
+foreach ($rows as $row) {
+    $grandTotal += (float)($row['total_harga'] ?? 0);
+
+    $registerKey = (string)($row['no_register'] ?? '');
+    if ($registerKey === '') {
+        $registerKey = '__empty__';
+    }
+
+    if (!isset($notaSummaries[$registerKey])) {
+        $notaSummaries[$registerKey] = [
+            'no_register' => $row['no_register'] ?? '',
+            'tanggal_belanja' => $row['tanggal_belanja'] ?? '',
+            'project' => $row['project'] ?? '',
+            'nama_toko' => $row['nama_toko'] ?? '',
+            'pemesan' => $row['pemesan'] ?? '',
+            'keterangan' => $row['keterangan'] ?? '',
+            'grand_total' => 0,
+            'items' => [],
+        ];
+    }
+
+    $notaSummaries[$registerKey]['grand_total'] += (float)($row['total_harga'] ?? 0);
+    $notaSummaries[$registerKey]['items'][] = [
+        'nama_barang' => $row['nama_barang'] ?? '',
+        'harga_barang' => (float)($row['harga_barang'] ?? 0),
+        'jumlah_barang' => $row['jumlah_barang'] ?? 0,
+        'satuan_barang' => $row['satuan_barang'] ?? '',
+        'total_harga' => (float)($row['total_harga'] ?? 0),
+    ];
+}
+$notaSummaries = array_values($notaSummaries);
 
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
-$header = ['No Register', 'Nama Barang', 'Harga', 'Qty', 'Satuan', 'Total', 'Project', 'Pemesan', 'Toko', 'Tanggal', 'Keterangan'];
+$header = ['No Register', 'Tanggal', 'Project', 'Toko', 'Rincian Material', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 
-foreach ($rows as $row) {
+foreach ($notaSummaries as $summary) {
+    $materialDetail = [];
+    foreach ($summary['items'] as $item) {
+        $materialDetail[] = sprintf(
+            '%s | Qty: %s %s | Harga: Rp %s | Total: Rp %s',
+            $item['nama_barang'] ?: '-',
+            $item['jumlah_barang'] ?? 0,
+            $item['satuan_barang'] ?: '-',
+            number_format($item['harga_barang'] ?? 0, 0, '.', ','),
+            number_format($item['total_harga'] ?? 0, 0, '.', ',')
+        );
+    }
+
     fputcsv($output, [
-        $row['no_register'],
-        $row['nama_barang'],
-        $row['harga_barang'],
-        $row['jumlah_barang'],
-        $row['satuan_barang'],
-        $row['total_harga'],
-        $row['project'],
-        $row['pemesan'],
-        $row['nama_toko'],
-        $row['tanggal_belanja'],
-        $row['keterangan'] ?? '-'
+        $summary['no_register'] ?: '-',
+        !empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-',
+        $summary['project'] ?: '-',
+        $summary['nama_toko'] ?: '-',
+        implode("; ", $materialDetail),
+        number_format($summary['grand_total'] ?? 0, 0, '.', ','),
+        $summary['pemesan'] ?: '-',
+        $summary['keterangan'] ?? '-'
     ], "\t");
 }
+
+fputcsv($output, ['', '', '', '', 'TOTAL KESELURUHAN', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
 
 fclose($output);

@@ -125,11 +125,12 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 display: block !important;
             }
             @page {
-                size: A4;
-                margin: 10mm 15mm;
+                size: A4 landscape;
+                margin: 7mm 8mm;
             }
             .report-container {
-                max-width: 210mm;
+                width: 100%;
+                max-width: 100%;
                 margin: 0 auto;
             }
             .report-header {
@@ -171,10 +172,11 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 text-align: left;
             }
             table {
-                font-size: 9pt;
+                font-size: 8.5pt;
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 10px;
+                table-layout: fixed;
             }
             th, td {
                 padding: 4px 3px;
@@ -253,6 +255,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             .card-body { 
                 padding: 0 !important; 
+            }
+            .table-responsive {
+                overflow: visible;
             }
         }
     </style>
