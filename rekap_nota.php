@@ -180,6 +180,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 padding: 4px 3px;
                 border: 1px solid #000;
                 text-align: left;
+                vertical-align: top;
             }
             th {
                 background: #e8e8e8;
@@ -199,6 +200,24 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             .center-cell {
                 text-align: center;
+            }
+            .material-list {
+                display: grid;
+                gap: 3px;
+            }
+            .material-item {
+                padding: 4px 6px;
+                border-left: 3px solid #0d6efd;
+                background: #f8f9fa;
+                border-radius: 3px;
+            }
+            .material-item strong {
+                display: block;
+                margin-bottom: 1px;
+            }
+            .material-meta {
+                font-size: 8.5pt;
+                color: #495057;
             }
             /* Mengatur kontainer agar tanda tangan tersebar merata */
         .signature-wrapper {
@@ -362,9 +381,16 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                         <td><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
                                         <td><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
                                         <td>
-                                            <div style="font-size: 9pt; line-height: 1.4;">
+                                            <div class="material-list">
                                                 <?php foreach ($summary['items'] as $item) : ?>
-                                                    <div>• <?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?> | Qty: <?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?> | Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?> | Total: Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></div>
+                                                    <div class="material-item">
+                                                        <strong><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></strong>
+                                                        <div class="material-meta">
+                                                            Qty: <?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?>
+                                                            &nbsp;|&nbsp; Harga: Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?>
+                                                            &nbsp;|&nbsp; Total: Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?>
+                                                        </div>
+                                                    </div>
                                                 <?php endforeach; ?>
                                             </div>
                                         </td>
