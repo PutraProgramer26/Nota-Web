@@ -230,6 +230,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .material-table .number-cell {
                 text-align: right;
             }
+            .material-row {
+                display: contents;
+            }
             /* Mengatur kontainer agar tanda tangan tersebar merata */
         .signature-wrapper {
         display: flex;
@@ -407,7 +410,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                                     </thead>
                                                     <tbody>
                                                         <?php foreach ($summary['items'] as $item) : ?>
-                                                            <tr>
+                                                            <tr class="material-row">
                                                                 <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
                                                                 <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
                                                                 <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
