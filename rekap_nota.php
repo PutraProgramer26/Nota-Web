@@ -215,6 +215,11 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 padding: 3px 4px;
                 text-align: left;
                 background: white;
+                white-space: nowrap;
+            }
+            .material-table td:first-child {
+                white-space: normal;
+                min-width: 180px;
             }
             .material-table th {
                 background: #f1f3f5;
@@ -362,14 +367,14 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 10%;">No Reg</th>
-                                <th style="width: 8%;">Tgl</th>
-                                <th style="width: 16%;">Project</th>
-                                <th style="width: 16%;">Toko</th>
-                                <th style="width: 24%;">Rincian Material</th>
-                                <th style="width: 12%;">Grand Total</th>
-                                <th style="width: 8%;">Order By</th>
-                                <th style="width: 6%;">Ket</th>
+                                <th style="width: 8%; min-width: 70px;">No Reg</th>
+                                <th style="width: 7%; min-width: 60px;">Tgl</th>
+                                <th style="width: 12%; min-width: 100px;">Project</th>
+                                <th style="width: 12%; min-width: 110px;">Toko</th>
+                                <th style="width: 34%; min-width: 260px;">Rincian Material</th>
+                                <th style="width: 12%; min-width: 120px;">Grand Total</th>
+                                <th style="width: 9%; min-width: 90px;">Order By</th>
+                                <th style="width: 6%; min-width: 60px;">Ket</th>
                             </tr>
                         </thead>
                         <tbody>
