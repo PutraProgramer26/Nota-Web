@@ -82,6 +82,14 @@ foreach ($rows as $row) {
     ];
 }
 $notaSummaries = array_values($notaSummaries);
+$maxMaterialCount = 0;
+foreach ($notaSummaries as $summary) {
+    $maxMaterialCount = max($maxMaterialCount, count($summary['items']));
+}
+$materialColumnHeaders = [];
+for ($i = 0; $i < $maxMaterialCount; $i++) {
+    $materialColumnHeaders[] = 'Barang ' . ($i + 1);
+}
 
 $tokoList = mysqli_query($conn, "SELECT DISTINCT nama_toko FROM nota WHERE nama_toko IS NOT NULL AND nama_toko <> '' ORDER BY nama_toko");
 $projectList = mysqli_query($conn, "SELECT DISTINCT project FROM nota WHERE project IS NOT NULL AND project <> '' ORDER BY project");
@@ -107,6 +115,17 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         .table-responsive { overflow-x: auto; }
         .btn-print { background: #0d6efd; color: white; }
         .print-only { display: none; }
+        .material-cell {
+            font-size: 8.5pt;
+            line-height: 1.3;
+        }
+        .material-cell strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+        .material-meta {
+            color: #495057;
+        }
 
         @media print {
             * {
@@ -376,7 +395,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                 <th style="width: 7%; min-width: 60px;">Tgl</th>
                                 <th style="width: 12%; min-width: 100px;">Project</th>
                                 <th style="width: 12%; min-width: 110px;">Toko</th>
-                                <th style="width: 34%; min-width: 260px;">Rincian Material</th>
+                                <?php foreach ($materialColumnHeaders as $header) : ?>
+                                    <th style="width: 12%; min-width: 120px;"><?php echo htmlspecialchars($header); ?></th>
+                                <?php endforeach; ?>
                                 <th style="width: 12%; min-width: 120px;">Grand Total</th>
                                 <th style="width: 9%; min-width: 90px;">Order By</th>
                                 <th style="width: 6%; min-width: 60px;">Ket</th>
@@ -394,37 +415,29 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                         <td class="center-cell"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
                                         <td><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
                                         <td><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
-                                        <td>
-                                            <div class="material-list">
-                                                <table class="material-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Nama Barang</th>
-                                                            <th>Qty</th>
-                                                            <th>Harga Barang</th>
-                                                            <th>Harga Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php foreach ($summary['items'] as $item) : ?>
-                                                            <tr>
-                                                                <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
-                                                                <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
-                                                                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
-                                                                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </td>
+                                        <?php foreach ($materialColumnHeaders as $index => $header) : ?>
+                                            <td>
+                                                <?php if (!empty($summary['items'][$index])) : ?>
+                                                    <?php $item = $summary['items'][$index]; ?>
+                                                    <div class="material-cell">
+                                                        <strong><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></strong>
+                                                        <div class="material-meta">Qty: <?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></div>
+                                                        <div class="material-meta">Harga: Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></div>
+                                                        <div class="material-meta">Total: Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></div>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </td>
+                                        <?php endforeach; ?>
                                         <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                                         <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
                                         <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
-                                    <td colspan="5" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
+                                    <td colspan="4" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
+                                    <?php foreach ($materialColumnHeaders as $header) : ?>
+                                        <td></td>
+                                    <?php endforeach; ?>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                                     <td colspan="2"></td>
                                 </tr>
