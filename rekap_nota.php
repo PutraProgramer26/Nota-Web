@@ -48,7 +48,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $grandTotal = 0;
-$registerGrandTotals = [];
+$notaSummaries = [];
 foreach ($rows as $row) {
     $grandTotal += (float)($row['total_harga'] ?? 0);
 
@@ -56,8 +56,24 @@ foreach ($rows as $row) {
     if ($registerKey === '') {
         $registerKey = '__empty__';
     }
-    $registerGrandTotals[$registerKey] = ($registerGrandTotals[$registerKey] ?? 0) + (float)($row['total_harga'] ?? 0);
+
+    if (!isset($notaSummaries[$registerKey])) {
+        $notaSummaries[$registerKey] = [
+            'no_register' => $row['no_register'] ?? '',
+            'tanggal_belanja' => $row['tanggal_belanja'] ?? '',
+            'project' => $row['project'] ?? '',
+            'nama_toko' => $row['nama_toko'] ?? '',
+            'pemesan' => $row['pemesan'] ?? '',
+            'keterangan' => $row['keterangan'] ?? '',
+            'item_count' => 0,
+            'grand_total' => 0,
+        ];
+    }
+
+    $notaSummaries[$registerKey]['item_count'] += 1;
+    $notaSummaries[$registerKey]['grand_total'] += (float)($row['total_harga'] ?? 0);
 }
+$notaSummaries = array_values($notaSummaries);
 
 $tokoList = mysqli_query($conn, "SELECT DISTINCT nama_toko FROM nota WHERE nama_toko IS NOT NULL AND nama_toko <> '' ORDER BY nama_toko");
 $projectList = mysqli_query($conn, "SELECT DISTINCT project FROM nota WHERE project IS NOT NULL AND project <> '' ORDER BY project");
@@ -315,49 +331,38 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 8%;">No Reg</th>
-                                <th style="width: 7%;">Tgl</th>
-                                <th style="width: 24%;">Material</th>
-                                <th style="width: 6%;">Qty</th>
-                                <th style="width: 7%;">Unit</th>
-                                <th style="width: 14%;">Harga</th>
-                                <th style="width: 14%;">Total</th>
-                                <th style="width: 14%;">Grand Total Nota</th>
+                                <th style="width: 10%;">No Reg</th>
+                                <th style="width: 8%;">Tgl</th>
+                                <th style="width: 16%;">Project</th>
+                                <th style="width: 16%;">Toko</th>
+                                <th style="width: 16%;">Grand Total</th>
+                                <th style="width: 10%;">Jumlah Item</th>
                                 <th style="width: 12%;">Order By</th>
-                                <th style="width: 8%;">Ket</th>
+                                <th style="width: 12%;">Ket</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (empty($rows)) : ?>
+                            <?php if (empty($notaSummaries)) : ?>
                                 <tr>
-                                    <td colspan="10" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
+                                    <td colspan="8" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
                                 </tr>
                             <?php else : ?>
-                                <?php foreach ($rows as $row) : ?>
+                                <?php foreach ($notaSummaries as $summary) : ?>
                                     <tr>
-                                        <td class="center-cell"><?php echo htmlspecialchars($row['no_register']); ?></td>
-                                        <td class="center-cell"><?php echo htmlspecialchars(date('d-M', strtotime($row['tanggal_belanja']))); ?></td>
-                                        <td><?php echo htmlspecialchars($row['nama_barang']); ?></td>
-                                        <td class="center-cell"><?php echo htmlspecialchars($row['jumlah_barang']); ?></td>
-                                        <td class="center-cell"><?php echo htmlspecialchars($row['satuan_barang']); ?></td>
-                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($row['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
-                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($row['total_harga'] ?? 0, 0, '.', ',')); ?></td>
-                                        <?php
-                                        $registerKey = (string)($row['no_register'] ?? '');
-                                        if ($registerKey === '') {
-                                            $registerKey = '__empty__';
-                                        }
-                                        ?>
-                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($registerGrandTotals[$registerKey] ?? 0, 0, '.', ',')); ?></td>
-                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($row['pemesan']); ?></td>
-                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
+                                        <td class="center-cell"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
+                                        <td class="center-cell"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
+                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
+                                        <td class="center-cell"><?php echo htmlspecialchars($summary['item_count'] ?? 0); ?></td>
+                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
+                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
-                                    <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
+                                    <td colspan="4" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
-                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
-                                    <td colspan="2"></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
