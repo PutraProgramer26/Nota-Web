@@ -85,7 +85,8 @@ header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
-$header = ['No Register', 'Tanggal', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
+fwrite($output, "\xEF\xBB\xBF");
+$header = ['No. Register', 'Tanggal', 'Nama Barang', 'Qty', 'Satuan', 'Harga Satuan', 'Jumlah Harga', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 
 foreach ($notaSummaries as $summary) {
