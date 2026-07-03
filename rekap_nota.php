@@ -148,6 +148,12 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 margin: 2px 0; 
                 font-size: 10pt;
             }
+            .hide-project-toko-print > thead > tr > th:nth-child(3),
+            .hide-project-toko-print > thead > tr > th:nth-child(4),
+            .hide-project-toko-print > tbody > tr > td:nth-child(3),
+            .hide-project-toko-print > tbody > tr > td:nth-child(4) {
+                display: none !important;
+            }
             .report-info {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -343,16 +349,6 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             <div class="print-only report-info">
                 <div>
                     <div class="report-info-item">
-                        <span class="report-info-label">Toko / Vendor</span>
-                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></span>
-                    </div>
-                    <div class="report-info-item" style="margin-top: 4px;">
-                        <span class="report-info-label">Project</span>
-                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
-                    </div>
-                </div>
-                <div>
-                    <div class="report-info-item">
                         <span class="report-info-label">Periode</span>
                         <span class="report-info-value">: <?php 
                             if ($selectedBulan) {
@@ -364,6 +360,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                             }
                         ?></span>
                     </div>
+                </div>
+                <div>
                     <div class="report-info-item" style="margin-top: 4px;">
                         <span class="report-info-label">Diterbitkan</span>
                         <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
@@ -374,7 +372,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
 
             <div class="card shadow-sm">
                 <div class="card-body table-responsive">
-                    <table>
+                    <table class="hide-project-toko-print">
                         <thead>
                             <tr>
                                 <th style="width: 8%; min-width: 70px;">No Reg</th>

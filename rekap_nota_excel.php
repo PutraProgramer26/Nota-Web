@@ -85,7 +85,7 @@ header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
-$header = ['No Register', 'Tanggal', 'Project', 'Toko', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
+$header = ['No Register', 'Tanggal', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 
 foreach ($notaSummaries as $summary) {
@@ -93,8 +93,6 @@ foreach ($notaSummaries as $summary) {
         fputcsv($output, [
             $index === 0 ? ($summary['no_register'] ?: '-') : '',
             $index === 0 ? (!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : '',
-            $index === 0 ? ($summary['project'] ?: '-') : '',
-            $index === 0 ? ($summary['nama_toko'] ?: '-') : '',
             $item['nama_barang'] ?: '-',
             $item['jumlah_barang'] ?? 0,
             $item['satuan_barang'] ?: '-',
@@ -107,6 +105,6 @@ foreach ($notaSummaries as $summary) {
     }
 }
 
-fputcsv($output, ['', '', '', '', '', '', '', '', '', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
+fputcsv($output, ['', '', '', '', '', '', '', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
 
 fclose($output);
