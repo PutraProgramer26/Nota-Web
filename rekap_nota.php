@@ -180,10 +180,10 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 10px;
-                table-layout: fixed;
+                table-layout: auto;
             }
             th, td {
-                padding: 4px 3px;
+                padding: 5px 6px;
                 border: 1px solid #000;
                 text-align: left;
                 vertical-align: top;
@@ -203,6 +203,11 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .number-cell {
                 text-align: right;
                 padding-right: 5px;
+                white-space: nowrap;
+            }
+            th.number-column {
+                white-space: nowrap;
+                min-width: 110px;
             }
             .center-cell {
                 text-align: center;
@@ -383,15 +388,15 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                             <tr>
                                 <th style="width: 6%; min-width: 60px;">No Reg</th>
                                 <th style="width: 6%; min-width: 55px;">Tgl</th>
-                                <th class="project-column" style="width: 10%; min-width: 90px;">Project</th>
-                                <th class="toko-column" style="width: 10%; min-width: 100px;">Toko</th>
-                                <th style="width: 25%; min-width: 180px;">Nama Barang</th>
-                                <th style="width: 8%; min-width: 60px;">Qty</th>
-                                <th class="number-cell" style="width: 10%; min-width: 90px;">Harga Barang</th>
-                                <th class="number-cell" style="width: 10%; min-width: 100px;">Harga Total</th>
-                                <th class="number-cell" style="width: 10%; min-width: 100px;">Grand Total</th>
-                                <th style="width: 8%; min-width: 80px;">Order By</th>
-                                <th style="width: 7%; min-width: 65px;">Ket</th>
+                                <th class="project-column" style="min-width: 90px;">Project</th>
+                                <th class="toko-column" style="min-width: 100px;">Toko</th>
+                                <th style="min-width: 180px;">Nama Barang</th>
+                                <th style="min-width: 60px;">Qty</th>
+                                <th class="number-column" style="min-width: 100px;">Harga Barang</th>
+                                <th class="number-column" style="min-width: 100px;">Harga Total</th>
+                                <th class="number-column" style="min-width: 110px;">Grand Total</th>
+                                <th style="min-width: 80px;">Order By</th>
+                                <th style="min-width: 65px;">Ket</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -454,8 +459,3 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     ?>
 </div>
         </div>
-        </div>
-    </div>
-    <?php include 'sidebar-script.php'; ?>
-</body>
-</html>

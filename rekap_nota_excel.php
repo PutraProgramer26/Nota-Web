@@ -91,12 +91,13 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         @page { size: A4 portrait; margin: 10mm; }
-        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; }
+        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; table-layout: auto; }
         th, td { border: 1px solid #000; padding: 5px; }
         th { background: #f1f1f1; }
         .meta-table td { border: none; padding: 3px 5px; }
         .meta-table td:first-child { font-weight: bold; }
-        .number-cell { text-align: right; }
+        .number-cell { text-align: right; white-space: nowrap; }
+        th.number-column { white-space: nowrap; min-width: 110px; }
     </style>
 </head>
 <body>
@@ -114,14 +115,14 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <th>Tanggal</th>
                 <th>Project</th>
                 <th>Toko</th>
-                <th>Nama Barang</th>
-                <th>Qty</th>
-                <th>Satuan</th>
-                <th>Harga Barang</th>
-                <th>Harga Total</th>
-                <th>Grand Total</th>
-                <th>Order By</th>
-                <th>Keterangan</th>
+                <th style="min-width: 180px;">Nama Barang</th>
+                <th style="min-width: 60px;">Qty</th>
+                <th style="min-width: 70px;">Satuan</th>
+                <th class="number-column" style="min-width: 110px;">Harga Barang</th>
+                <th class="number-column" style="min-width: 110px;">Harga Total</th>
+                <th class="number-column" style="min-width: 120px;">Grand Total</th>
+                <th style="min-width: 80px;">Order By</th>
+                <th style="min-width: 65px;">Keterangan</th>
             </tr>
         </thead>
         <tbody>
