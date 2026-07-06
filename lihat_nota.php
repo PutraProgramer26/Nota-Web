@@ -31,7 +31,6 @@ foreach ($allRows as $row) {
             'project' => $row['project'] ?? '',
             'nama_toko' => $row['nama_toko'] ?? '',
             'pemesan' => $row['pemesan'] ?? '',
-            'keterangan' => $row['keterangan'] ?? '',
             'grand_total' => 0,
             'items' => [],
         ];
@@ -44,7 +43,9 @@ foreach ($allRows as $row) {
         'jumlah_barang' => $row['jumlah_barang'] ?? 0,
         'satuan_barang' => $row['satuan_barang'] ?? '',
         'total_harga' => (float)($row['total_harga'] ?? 0),
+        'keterangan' => $row['keterangan'] ?? '',
     ];
+
 }
 
 // Convert to indexed array
@@ -142,8 +143,8 @@ $rows = array_values($notaSummaries);
                                         <?php if ($index === 0) : ?>
                                             <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                                             <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?: '-'); ?></td>
                                         <?php endif; ?>
+                                        <td class="center-cell"><?php echo htmlspecialchars($item['keterangan'] ?: '-'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endforeach; ?>

@@ -63,7 +63,6 @@ if (tableExists($conn, $notaTable)) {
                 'project_name' => $row['project_name'] ?? '',
                 'toko_name' => $row['toko_name'] ?? '',
                 'pemesan' => $row['pemesan'] ?? '',
-                'keterangan' => $row['keterangan'] ?? '',
                 'grand_total' => 0,
                 'items' => [],
             ];
@@ -73,6 +72,7 @@ if (tableExists($conn, $notaTable)) {
         $notaSummaries[$registerKey]['items'][] = [
             'nama_barang' => $row['nama_barang'] ?? '',
             'total' => (float)($row['total'] ?? 0),
+            'keterangan' => $row['keterangan'] ?? '',
         ];
     }
 
@@ -253,8 +253,8 @@ if (tableExists($conn, $notaTable)) {
                                         <?php if ($index === 0): ?>
                                             <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                                             <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?: '-'); ?></td>
                                         <?php endif; ?>
+                                        <td class="center-cell"><?php echo htmlspecialchars($item['keterangan'] ?: '-'); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endforeach; ?>
