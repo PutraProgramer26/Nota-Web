@@ -126,7 +126,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             @page {
                 size: A4 portrait;
-                margin: 10mm 12mm;
+                margin: 10mm;
             }
             .report-container {
                 width: 100%;
@@ -459,3 +459,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     ?>
 </div>
         </div>
+        </div>
+    </div>
+    <?php include 'sidebar-script.php'; ?>
+</body>
+</html>
