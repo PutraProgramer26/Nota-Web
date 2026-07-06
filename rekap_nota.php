@@ -148,10 +148,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 margin: 2px 0; 
                 font-size: 10pt;
             }
-            .hide-project-toko-print > thead > tr > th:nth-child(3),
-            .hide-project-toko-print > thead > tr > th:nth-child(4),
-            .hide-project-toko-print > tbody > tr > td:nth-child(3),
-            .hide-project-toko-print > tbody > tr > td:nth-child(4) {
+            .hide-project-toko-print .project-column,
+            .hide-project-toko-print .toko-column {
                 display: none !important;
             }
             .report-info {
@@ -385,13 +383,13 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                             <tr>
                                 <th style="width: 6%; min-width: 60px;">No Reg</th>
                                 <th style="width: 6%; min-width: 55px;">Tgl</th>
-                                <th style="width: 10%; min-width: 90px;">Project</th>
-                                <th style="width: 10%; min-width: 100px;">Toko</th>
+                                <th class="project-column" style="width: 10%; min-width: 90px;">Project</th>
+                                <th class="toko-column" style="width: 10%; min-width: 100px;">Toko</th>
                                 <th style="width: 25%; min-width: 180px;">Nama Barang</th>
                                 <th style="width: 8%; min-width: 60px;">Qty</th>
-                                <th style="width: 10%; min-width: 90px;">Harga Barang</th>
-                                <th style="width: 10%; min-width: 100px;">Harga Total</th>
-                                <th style="width: 10%; min-width: 100px;">Grand Total</th>
+                                <th class="number-cell" style="width: 10%; min-width: 90px;">Harga Barang</th>
+                                <th class="number-cell" style="width: 10%; min-width: 100px;">Harga Total</th>
+                                <th class="number-cell" style="width: 10%; min-width: 100px;">Grand Total</th>
                                 <th style="width: 8%; min-width: 80px;">Order By</th>
                                 <th style="width: 7%; min-width: 65px;">Ket</th>
                             </tr>
@@ -409,8 +407,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                             <?php if ($index === 0) : ?>
                                                 <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
                                                 <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
-                                                <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
-                                                <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
+                                                <td class="project-column" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
+                                                <td class="toko-column" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
                                             <?php endif; ?>
                                             <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
                                             <td class="center-cell"><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
