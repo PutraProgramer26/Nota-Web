@@ -29,7 +29,6 @@ $notaLogCount = 0;
 $notaPerProject = [];
 $projectPerToko = [];
 $historyLog = [];
-$registerGrandTotals = [];
 
 if (tableExists($conn, $notaTable)) {
     $projectCount = fetchOne($conn, "SELECT COUNT(DISTINCT project) AS total_projects FROM {$notaTable}")['total_projects'] ?? 0;
@@ -49,9 +48,8 @@ if (tableExists($conn, $notaTable)) {
         FROM {$notaTable}
         ORDER BY tanggal_belanja DESC, id DESC");
 
-    // Group by no_register and calculate grand totals
+    // Group by no_register and collect items
     $notaSummaries = [];
-    $itemCounts = [];
     foreach ($historyLogRaw as $row) {
         $registerKey = (string)($row['no_register'] ?? '');
         if ($registerKey === '') {
@@ -67,21 +65,18 @@ if (tableExists($conn, $notaTable)) {
                 'pemesan' => $row['pemesan'] ?? '',
                 'keterangan' => $row['keterangan'] ?? '',
                 'grand_total' => 0,
-                'item_count' => 0,
+                'items' => [],
             ];
-            $itemCounts[$registerKey] = 0;
         }
         
         $notaSummaries[$registerKey]['grand_total'] += (float)($row['total'] ?? 0);
-        $itemCounts[$registerKey] += 1;
+        $notaSummaries[$registerKey]['items'][] = [
+            'nama_barang' => $row['nama_barang'] ?? '',
+            'total' => (float)($row['total'] ?? 0),
+        ];
     }
 
-    // Add item count to summaries and limit to 50
-    foreach ($notaSummaries as $key => $summary) {
-        $notaSummaries[$key]['item_count'] = $itemCounts[$key];
-    }
-    
-    // Convert to indexed array and limit to 50
+    // Convert to indexed array and limit to 50 notes (not items)
     $historyLog = array_slice(array_values($notaSummaries), 0, 50);
 }
 ?>
@@ -230,29 +225,38 @@ if (tableExists($conn, $notaTable)) {
                             <th style="width: 10%;">Tanggal</th>
                             <th style="width: 12%;">Project</th>
                             <th style="width: 12%;">Toko</th>
-                            <th style="width: 10%;">Jumlah Item</th>
+                            <th style="width: 16%;">Nama Barang</th>
+                            <th style="width: 12%;">Total Item</th>
                             <th style="width: 12%;">Grand Total</th>
-                            <th style="width: 12%;">Pemesan</th>
-                            <th style="width: 12%;">Keterangan</th>
+                            <th style="width: 8%;">Pemesan</th>
+                            <th style="width: 8%;">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (count($historyLog) === 0): ?>
                             <tr>
-                                <td colspan="8" class="center-cell" style="padding: 20px;">Belum ada data nota.</td>
+                                <td colspan="9" class="center-cell" style="padding: 20px;">Belum ada data nota.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($historyLog as $row): ?>
-                                <tr>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['no_register'] ?: '-'); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['tanggal'] ?: '-'); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['project_name'] ?: '-'); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['toko_name'] ?: '-'); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['item_count']); ?></td>
-                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($row['grand_total'] ?? 0, 0, '.', ',')); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['pemesan'] ?: '-'); ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($row['keterangan'] ?: '-'); ?></td>
-                                </tr>
+                            <?php foreach ($historyLog as $summary): ?>
+                                <?php $rowspan = count($summary['items']); ?>
+                                <?php foreach ($summary['items'] as $index => $item): ?>
+                                    <tr>
+                                        <?php if ($index === 0): ?>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['tanggal'] ?: '-'); ?></td>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project_name'] ?: '-'); ?></td>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['toko_name'] ?: '-'); ?></td>
+                                        <?php endif; ?>
+                                        <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
+                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total'] ?? 0, 0, '.', ',')); ?></td>
+                                        <?php if ($index === 0): ?>
+                                            <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
+                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?: '-'); ?></td>
+                                        <?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
