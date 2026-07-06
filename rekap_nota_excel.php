@@ -111,6 +111,8 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
             <tr>
                 <th>No Register</th>
                 <th>Tanggal</th>
+                <th>Project</th>
+                <th>Toko</th>
                 <th>Nama Barang</th>
                 <th>Qty</th>
                 <th>Satuan</th>
@@ -123,18 +125,25 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         </thead>
         <tbody>
             <?php foreach ($notaSummaries as $summary) : ?>
+                <?php $rowspan = count($summary['items']); ?>
                 <?php foreach ($summary['items'] as $index => $item) : ?>
                     <tr>
-                        <td><?php echo $index === 0 ? htmlspecialchars($summary['no_register'] ?: '-') : ''; ?></td>
-                        <td><?php echo $index === 0 ? htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : ''; ?></td>
+                        <?php if ($index === 0) : ?>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
+                        <?php endif; ?>
                         <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
                         <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?></td>
                         <td><?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
                         <td><?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
                         <td><?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
-                        <td><?php echo $index === 0 ? htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')) : ''; ?></td>
-                        <td><?php echo $index === 0 ? htmlspecialchars($summary['pemesan'] ?: '-') : ''; ?></td>
-                        <td><?php echo $index === 0 ? htmlspecialchars($summary['keterangan'] ?? '-') : ''; ?></td>
+                        <?php if ($index === 0) : ?>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
+                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
