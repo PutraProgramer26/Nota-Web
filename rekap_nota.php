@@ -107,17 +107,6 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         .table-responsive { overflow-x: auto; }
         .btn-print { background: #0d6efd; color: white; }
         .print-only { display: none; }
-        .report-card { border: 1px solid #e2e8f0; border-radius: .85rem; background: #fff; }
-        .report-info { background: #f8fbff; border: 1px solid #d9e3ef; border-radius: 10px; padding: 12px; }
-        .report-info-item { gap: 8px; margin-bottom: 6px; }
-        .report-info-label { font-weight: 700; width: 40%; }
-        .table-responsive table { min-width: 900px; }
-        table { border-collapse: collapse; width: 100%; font-size: 13px; }
-        thead th { background: #eef2f7; border-color: #cbd5e1; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
-        tbody tr:nth-child(even) td { background: #fbfdff; }
-        th, td { border: 1px solid #d1d5db; padding: 8px 10px; vertical-align: middle; }
-        .number-cell { text-align: right; }
-        .center-cell { text-align: center; }
 
         @media print {
             * {
@@ -171,16 +160,13 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 gap: 30px;
                 margin-bottom: 15px;
                 font-size: 9pt;
-                border: 1px solid #000;
-                border-radius: 8px;
-                padding: 12px 10px;
-                background: #f8f9fa;
+                border-bottom: 1px solid #000;
+                padding-bottom: 10px;
             }
             .report-info-item {
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
-                gap: 8px;
             }
             .report-info-label {
                 font-weight: bold;
@@ -198,27 +184,23 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 margin-bottom: 10px;
                 table-layout: fixed;
             }
-            thead th {
-                background: #eceef0;
-                border-color: #000;
-                font-weight: bold;
-                text-align: center;
-            }
-            tbody tr:nth-child(even) td {
-                background: #f8f8f8;
-            }
             th, td {
-                padding: 5px 6px;
+                padding: 4px 3px;
                 border: 1px solid #000;
                 text-align: left;
                 vertical-align: top;
+            }
+            th {
+                background: #e8e8e8;
+                font-weight: bold;
+                text-align: center;
             }
             td {
                 background: white;
             }
             tr.total-row {
                 font-weight: bold;
-                background: #efefef;
+                background: #f0f0f0;
             }
             .number-cell {
                 text-align: right;

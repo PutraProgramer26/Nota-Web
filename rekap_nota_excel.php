@@ -91,17 +91,11 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         @page { size: A4 portrait; margin: 10mm; }
-        body { font-family: Arial, sans-serif; color: #1c1c1c; }
         table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; }
-        th, td { border: 1px solid #777; padding: 6px 8px; }
-        th { background: #e6ebf2; font-weight: bold; text-align: center; }
-        tbody tr:nth-child(even) td { background: #f7f8fb; }
-        td { vertical-align: top; }
-        .meta-table { margin-bottom: 12px; }
-        .meta-table td { border: none; padding: 4px 6px; }
-        .meta-table td:first-child { font-weight: bold; width: 120px; }
-        .summary-row td { font-weight: bold; background: #e8ecf1; }
-        .number-cell { text-align: right; }
+        th, td { border: 1px solid #000; padding: 5px; }
+        th { background: #f1f1f1; }
+        .meta-table td { border: none; padding: 3px 5px; }
+        .meta-table td:first-child { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -153,9 +147,9 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                     </tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
-            <tr class="summary-row">
-                <td colspan="9" style="text-align:right;">TOTAL KESELURUHAN</td>
-                <td class="number-cell"><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+            <tr>
+                <td colspan="7" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
+                <td><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                 <td colspan="2"></td>
             </tr>
         </tbody>
