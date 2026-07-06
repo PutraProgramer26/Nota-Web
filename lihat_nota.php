@@ -68,25 +68,41 @@ $rows = array_values($notaSummaries);
         }
         .nota-table th,
         .nota-table td {
-            padding: 8px 6px;
+            padding: 10px 8px;
             border: 1px solid #dee2e6;
             text-align: left;
             vertical-align: middle;
+            word-break: break-word;
         }
         .nota-table th {
             background: #f1f3f5;
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
+            white-space: nowrap;
+            color: #333;
         }
         .nota-table td {
             background: white;
+            font-size: 14px;
         }
         .nota-table .number-cell {
             text-align: right;
-            padding-right: 5px;
+            padding-right: 12px;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
         }
         .nota-table .center-cell {
             text-align: center;
+        }
+        /* Responsive column sizing */
+        .nota-table thead tr {
+            background: #f1f3f5;
+        }
+        .nota-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .nota-table tbody tr:nth-child(odd) {
+            background-color: #fafbfc;
         }
     </style>
 </head>
@@ -109,17 +125,17 @@ $rows = array_values($notaSummaries);
                 <table class="nota-table">
                     <thead>
                         <tr>
-                            <th style="width: 8%;">No Register</th>
-                            <th style="width: 8%;">Tanggal</th>
-                            <th style="width: 10%;">Project</th>
-                            <th style="width: 10%;">Toko</th>
-                            <th style="width: 15%;">Nama Barang</th>
-                            <th style="width: 8%;">Qty</th>
-                            <th style="width: 10%;">Harga</th>
-                            <th style="width: 10%;">Total</th>
-                            <th style="width: 10%;">Grand Total</th>
-                            <th style="width: 8%;">Pemesan</th>
-                            <th style="width: 9%;">Keterangan</th>
+                            <th>No Register</th>
+                            <th>Tanggal</th>
+                            <th>Project</th>
+                            <th>Toko</th>
+                            <th>Nama Barang</th>
+                            <th>Qty</th>
+                            <th>Harga</th>
+                            <th>Total</th>
+                            <th>Grand Total</th>
+                            <th>Pemesan</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>

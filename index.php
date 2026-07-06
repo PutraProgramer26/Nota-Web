@@ -98,25 +98,41 @@ if (tableExists($conn, $notaTable)) {
         }
         .history-table th,
         .history-table td {
-            padding: 8px 6px;
+            padding: 10px 8px;
             border: 1px solid #dee2e6;
             text-align: left;
             vertical-align: middle;
+            word-break: break-word;
         }
         .history-table th {
             background: #f1f3f5;
-            font-weight: bold;
+            font-weight: 600;
             text-align: center;
+            white-space: nowrap;
+            color: #333;
         }
         .history-table td {
             background: white;
+            font-size: 14px;
         }
         .history-table .number-cell {
             text-align: right;
-            padding-right: 5px;
+            padding-right: 12px;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
         }
         .history-table .center-cell {
             text-align: center;
+        }
+        /* Responsive table styling */
+        .history-table thead tr {
+            background: #f1f3f5;
+        }
+        .history-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .history-table tbody tr:nth-child(odd) {
+            background-color: #fafbfc;
         }
     </style>
 </head>
@@ -221,15 +237,15 @@ if (tableExists($conn, $notaTable)) {
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th style="width: 10%;">No Register</th>
-                            <th style="width: 10%;">Tanggal</th>
-                            <th style="width: 12%;">Project</th>
-                            <th style="width: 12%;">Toko</th>
-                            <th style="width: 16%;">Nama Barang</th>
-                            <th style="width: 12%;">Total Item</th>
-                            <th style="width: 12%;">Grand Total</th>
-                            <th style="width: 8%;">Pemesan</th>
-                            <th style="width: 8%;">Keterangan</th>
+                            <th>No Register</th>
+                            <th>Tanggal</th>
+                            <th>Project</th>
+                            <th>Toko</th>
+                            <th>Nama Barang</th>
+                            <th>Total Item</th>
+                            <th>Grand Total</th>
+                            <th>Pemesan</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
