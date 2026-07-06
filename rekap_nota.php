@@ -383,61 +383,46 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                     <table class="hide-project-toko-print">
                         <thead>
                             <tr>
-                                <th style="width: 8%; min-width: 70px;">No Reg</th>
-                                <th style="width: 7%; min-width: 60px;">Tgl</th>
-                                <th style="width: 12%; min-width: 100px;">Project</th>
-                                <th style="width: 12%; min-width: 110px;">Toko</th>
-                                <th style="width: 34%; min-width: 260px;">Rincian Material</th>
-                                <th style="width: 12%; min-width: 120px;">Grand Total</th>
-                                <th style="width: 9%; min-width: 90px;">Order By</th>
-                                <th style="width: 6%; min-width: 60px;">Ket</th>
+                                <th style="width: 6%; min-width: 60px;">No Reg</th>
+                                <th style="width: 6%; min-width: 55px;">Tgl</th>
+                                <th style="width: 10%; min-width: 90px;">Project</th>
+                                <th style="width: 10%; min-width: 100px;">Toko</th>
+                                <th style="width: 25%; min-width: 180px;">Nama Barang</th>
+                                <th style="width: 8%; min-width: 60px;">Qty</th>
+                                <th style="width: 10%; min-width: 90px;">Harga Barang</th>
+                                <th style="width: 10%; min-width: 100px;">Harga Total</th>
+                                <th style="width: 10%; min-width: 100px;">Grand Total</th>
+                                <th style="width: 8%; min-width: 80px;">Order By</th>
+                                <th style="width: 7%; min-width: 65px;">Ket</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($notaSummaries)) : ?>
                                 <tr>
-                                    <td colspan="8" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
+                                    <td colspan="11" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
                                 </tr>
                             <?php else : ?>
                                 <?php foreach ($notaSummaries as $summary) : ?>
-                                    <tr>
-                                        <td class="center-cell"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
-                                        <td class="center-cell"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
-                                        <td><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
-                                        <td><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
-                                        <td>
-                                            <div class="material-list">
-                                                <table class="material-table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Nama Barang</th>
-                                                            <th>Qty</th>
-                                                            <th>Harga Barang</th>
-                                                            <th>Harga Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php foreach ($summary['items'] as $item) : ?>
-                                                            <tr>
-                                                                <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
-                                                                <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
-                                                                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
-                                                                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </td>
-                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
-                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                                        <td class="center-cell" style="font-size: 8pt;"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
-                                    </tr>
+                                    <?php foreach ($summary['items'] as $index => $item) : ?>
+                                        <tr>
+                                            <td class="center-cell"><?php echo $index === 0 ? htmlspecialchars($summary['no_register'] ?: '-') : ''; ?></td>
+                                            <td class="center-cell"><?php echo $index === 0 ? htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-') : ''; ?></td>
+                                            <td><?php echo $index === 0 ? htmlspecialchars($summary['project'] ?: '-') : ''; ?></td>
+                                            <td><?php echo $index === 0 ? htmlspecialchars($summary['nama_toko'] ?: '-') : ''; ?></td>
+                                            <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
+                                            <td class="center-cell"><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
+                                            <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
+                                            <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
+                                            <td class="number-cell"><?php echo $index === 0 ? 'Rp ' . htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')) : ''; ?></td>
+                                            <td class="center-cell" style="font-size: 8pt;"><?php echo $index === 0 ? htmlspecialchars($summary['pemesan'] ?: '-') : ''; ?></td>
+                                            <td class="center-cell" style="font-size: 8pt;"><?php echo $index === 0 ? htmlspecialchars($summary['keterangan'] ?? '-') : ''; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
-                                    <td colspan="5" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
+                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
-                                    <td colspan="2"></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
