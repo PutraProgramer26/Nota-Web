@@ -29,6 +29,7 @@ $notaLogCount = 0;
 $notaPerProject = [];
 $projectPerToko = [];
 $historyLog = [];
+$registerGrandTotals = [];
 
 if (tableExists($conn, $notaTable)) {
     $projectCount = fetchOne($conn, "SELECT COUNT(DISTINCT project) AS total_projects FROM {$notaTable}")['total_projects'] ?? 0;
@@ -44,40 +45,18 @@ if (tableExists($conn, $notaTable)) {
         GROUP BY nama_toko
         ORDER BY value DESC");
 
-    $historyLogRaw = fetchAllRows($conn, "SELECT id, no_register, nama_barang, tanggal_belanja AS tanggal, project AS project_name, nama_toko AS toko_name, total_harga AS total, pemesan, keterangan
+    $historyLog = fetchAllRows($conn, "SELECT id, no_register, nama_barang, tanggal_belanja AS tanggal, project AS project_name, nama_toko AS toko_name, total_harga AS total, pemesan, keterangan
         FROM {$notaTable}
-        ORDER BY tanggal_belanja DESC, id DESC");
+        ORDER BY tanggal_belanja DESC, id DESC
+        LIMIT 50");
 
-    // Group by no_register and collect items
-    $notaSummaries = [];
-    foreach ($historyLogRaw as $row) {
+    foreach ($historyLog as $row) {
         $registerKey = (string)($row['no_register'] ?? '');
         if ($registerKey === '') {
             $registerKey = '__empty__';
         }
-        
-        if (!isset($notaSummaries[$registerKey])) {
-            $notaSummaries[$registerKey] = [
-                'no_register' => $row['no_register'] ?? '',
-                'tanggal' => $row['tanggal'] ?? '',
-                'project_name' => $row['project_name'] ?? '',
-                'toko_name' => $row['toko_name'] ?? '',
-                'pemesan' => $row['pemesan'] ?? '',
-                'grand_total' => 0,
-                'items' => [],
-            ];
-        }
-        
-        $notaSummaries[$registerKey]['grand_total'] += (float)($row['total'] ?? 0);
-        $notaSummaries[$registerKey]['items'][] = [
-            'nama_barang' => $row['nama_barang'] ?? '',
-            'total' => (float)($row['total'] ?? 0),
-            'keterangan' => $row['keterangan'] ?? '',
-        ];
+        $registerGrandTotals[$registerKey] = ($registerGrandTotals[$registerKey] ?? 0) + (float)($row['total'] ?? 0);
     }
-
-    // Convert to indexed array and limit to 50 notes (not items)
-    $historyLog = array_slice(array_values($notaSummaries), 0, 50);
 }
 ?>
 <!DOCTYPE html>
@@ -89,52 +68,6 @@ if (tableExists($conn, $notaTable)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/app.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-            table-layout: auto;
-        }
-        .history-table th,
-        .history-table td {
-            padding: 10px 8px;
-            border: 1px solid #dee2e6;
-            text-align: left;
-            vertical-align: middle;
-            word-break: break-word;
-        }
-        .history-table th {
-            background: #f1f3f5;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            color: #333;
-        }
-        .history-table td {
-            background: white;
-            font-size: 14px;
-        }
-        .history-table .number-cell {
-            text-align: right;
-            padding-right: 12px;
-            white-space: nowrap;
-            font-family: 'Courier New', monospace;
-        }
-        .history-table .center-cell {
-            text-align: center;
-        }
-        /* Responsive table styling */
-        .history-table thead tr {
-            background: #f1f3f5;
-        }
-        .history-table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        .history-table tbody tr:nth-child(odd) {
-            background-color: #fafbfc;
-        }
-    </style>
 </head>
 <body>
     <div class="page-shell">
@@ -234,16 +167,17 @@ if (tableExists($conn, $notaTable)) {
                 <h5 class="mb-0">History Log Nota</h5>
             </div>
             <div class="card-body table-responsive">
-                <table class="history-table">
-                    <thead>
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
+                            <th>ID</th>
                             <th>No Register</th>
+                            <th>Nama Barang</th>
                             <th>Tanggal</th>
                             <th>Project</th>
                             <th>Toko</th>
-                            <th>Nama Barang</th>
-                            <th>Total Item</th>
-                            <th>Grand Total</th>
+                            <th>Total</th>
+                            <th>Grand Total Nota</th>
                             <th>Pemesan</th>
                             <th>Keterangan</th>
                         </tr>
@@ -251,28 +185,28 @@ if (tableExists($conn, $notaTable)) {
                     <tbody>
                         <?php if (count($historyLog) === 0): ?>
                             <tr>
-                                <td colspan="9" class="center-cell" style="padding: 20px;">Belum ada data nota.</td>
+                                <td colspan="9" class="text-center text-muted">Belum ada data nota.</td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($historyLog as $summary): ?>
-                                <?php $rowspan = count($summary['items']); ?>
-                                <?php foreach ($summary['items'] as $index => $item): ?>
-                                    <tr>
-                                        <?php if ($index === 0): ?>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['tanggal'] ?: '-'); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project_name'] ?: '-'); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['toko_name'] ?: '-'); ?></td>
-                                        <?php endif; ?>
-                                        <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
-                                        <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total'] ?? 0, 0, '.', ',')); ?></td>
-                                        <?php if ($index === 0): ?>
-                                            <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
-                                            <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                                        <?php endif; ?>
-                                        <td class="center-cell"><?php echo htmlspecialchars($item['keterangan'] ?: '-'); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <?php foreach ($historyLog as $row): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['no_register']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['nama_barang']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['tanggal']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['project_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['toko_name']); ?></td>
+                                    <td><?php echo htmlspecialchars(number_format($row['total'] ?? 0, 0, ',', '.')); ?></td>
+                                    <?php
+                                    $registerKey = (string)($row['no_register'] ?? '');
+                                    if ($registerKey === '') {
+                                        $registerKey = '__empty__';
+                                    }
+                                    ?>
+                                    <td>Rp <?php echo htmlspecialchars(number_format($registerGrandTotals[$registerKey] ?? 0, 0, ',', '.')); ?></td>
+                                    <td><?php echo htmlspecialchars($row['pemesan']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
+                                </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
