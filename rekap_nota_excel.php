@@ -85,6 +85,12 @@ header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 
 $output = fopen('php://output', 'w');
+$periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
+fputcsv($output, ['Periode', $periodeLabel], "\t");
+fputcsv($output, ['Diterbitkan', date('d F Y')], "\t");
+fputcsv($output, ['Toko', $selectedToko ?: 'Semua Toko'], "\t");
+fputcsv($output, ['Project', $selectedProject ?: 'Semua Project'], "\t");
+fputcsv($output, [], "\t");
 $header = ['No Register', 'Tanggal', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
 fputcsv($output, $header, "\t");
 

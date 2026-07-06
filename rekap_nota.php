@@ -360,11 +360,19 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                             }
                         ?></span>
                     </div>
+                    <div class="report-info-item" style="margin-top: 4px;">
+                        <span class="report-info-label">Toko</span>
+                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></span>
+                    </div>
                 </div>
                 <div>
                     <div class="report-info-item" style="margin-top: 4px;">
                         <span class="report-info-label">Diterbitkan</span>
                         <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
+                    </div>
+                    <div class="report-info-item" style="margin-top: 4px;">
+                        <span class="report-info-label">Project</span>
+                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
                     </div>
                 </div>
             </div>
