@@ -125,8 +125,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 display: block !important;
             }
             @page {
-                size: A4 landscape;
-                margin: 7mm 8mm;
+                size: A4 portrait;
+                margin: 10mm 12mm;
             }
             .report-container {
                 width: 100%;

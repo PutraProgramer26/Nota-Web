@@ -83,34 +83,68 @@ $notaSummaries = array_values($notaSummaries);
 
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
+echo "\xEF\xBB\xBF";
 
-$output = fopen('php://output', 'w');
 $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
-fputcsv($output, ['Periode', $periodeLabel], "\t");
-fputcsv($output, ['Diterbitkan', date('d F Y')], "\t");
-fputcsv($output, ['Toko', $selectedToko ?: 'Semua Toko'], "\t");
-fputcsv($output, ['Project', $selectedProject ?: 'Semua Project'], "\t");
-fputcsv($output, [], "\t");
-$header = ['No Register', 'Tanggal', 'Nama Barang', 'Qty', 'Satuan', 'Harga Barang', 'Harga Total', 'Grand Total', 'Order By', 'Keterangan'];
-fputcsv($output, $header, "\t");
-
-foreach ($notaSummaries as $summary) {
-    foreach ($summary['items'] as $index => $item) {
-        fputcsv($output, [
-            $index === 0 ? ($summary['no_register'] ?: '-') : '',
-            $index === 0 ? (!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : '',
-            $item['nama_barang'] ?: '-',
-            $item['jumlah_barang'] ?? 0,
-            $item['satuan_barang'] ?: '-',
-            number_format($item['harga_barang'] ?? 0, 0, '.', ','),
-            number_format($item['total_harga'] ?? 0, 0, '.', ','),
-            $index === 0 ? number_format($summary['grand_total'] ?? 0, 0, '.', ',') : '',
-            $index === 0 ? ($summary['pemesan'] ?: '-') : '',
-            $index === 0 ? ($summary['keterangan'] ?? '-') : ''
-        ], "\t");
-    }
-}
-
-fputcsv($output, ['', '', '', '', '', '', '', number_format($grandTotal, 0, '.', ','), '', ''], "\t");
-
-fclose($output);
+?><html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        @page { size: A4 portrait; margin: 10mm; }
+        table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; }
+        th, td { border: 1px solid #000; padding: 5px; }
+        th { background: #f1f1f1; }
+        .meta-table td { border: none; padding: 3px 5px; }
+        .meta-table td:first-child { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <table class="meta-table">
+        <tr><td>Periode</td><td><?php echo htmlspecialchars($periodeLabel); ?></td></tr>
+        <tr><td>Diterbitkan</td><td><?php echo date('d F Y'); ?></td></tr>
+        <tr><td>Toko</td><td><?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></td></tr>
+        <tr><td>Project</td><td><?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></td></tr>
+    </table>
+    <br />
+    <table>
+        <thead>
+            <tr>
+                <th>No Register</th>
+                <th>Tanggal</th>
+                <th>Nama Barang</th>
+                <th>Qty</th>
+                <th>Satuan</th>
+                <th>Harga Barang</th>
+                <th>Harga Total</th>
+                <th>Grand Total</th>
+                <th>Order By</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($notaSummaries as $summary) : ?>
+                <?php foreach ($summary['items'] as $index => $item) : ?>
+                    <tr>
+                        <td><?php echo $index === 0 ? htmlspecialchars($summary['no_register'] ?: '-') : ''; ?></td>
+                        <td><?php echo $index === 0 ? htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M-Y', strtotime($summary['tanggal_belanja'])) : '-') : ''; ?></td>
+                        <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
+                        <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?></td>
+                        <td><?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
+                        <td><?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
+                        <td><?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
+                        <td><?php echo $index === 0 ? htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')) : ''; ?></td>
+                        <td><?php echo $index === 0 ? htmlspecialchars($summary['pemesan'] ?: '-') : ''; ?></td>
+                        <td><?php echo $index === 0 ? htmlspecialchars($summary['keterangan'] ?? '-') : ''; ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+            <tr>
+                <td colspan="7" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
+                <td><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+                <td colspan="2"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+<?php
