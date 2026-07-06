@@ -125,8 +125,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 display: block !important;
             }
             @page {
-                size: A4 portrait;
-                margin: 10mm 12mm;
+                size: A4 landscape;
+                margin: 7mm 8mm;
             }
             .report-container {
                 width: 100%;
@@ -135,13 +135,13 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             .report-header {
                 text-align: center;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
                 border-bottom: 2px solid #000;
                 padding-bottom: 8px;
             }
             .report-header h2 { 
                 margin: 0; 
-                font-size: 15pt; 
+                font-size: 14pt; 
                 font-weight: bold;
             }
             .report-header p { 
@@ -155,40 +155,37 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 display: none !important;
             }
             .report-info {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                justify-content: space-between;
-                margin-bottom: 12px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin-bottom: 15px;
                 font-size: 9pt;
                 border-bottom: 1px solid #000;
                 padding-bottom: 10px;
             }
             .report-info-item {
-                width: calc(50% - 6px);
                 display: flex;
                 justify-content: flex-start;
                 align-items: center;
-                gap: 4px;
             }
             .report-info-label {
                 font-weight: bold;
-                width: auto;
-                min-width: 90px;
+                width: 45%;
+                text-align: left;
             }
             .report-info-value {
-                width: auto;
+                width: 55%;
+                text-align: left;
             }
             table {
-                font-size: 9pt;
+                font-size: 8.5pt;
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 10px;
                 table-layout: fixed;
-                word-wrap: break-word;
             }
             th, td {
-                padding: 6px 5px;
+                padding: 4px 3px;
                 border: 1px solid #000;
                 text-align: left;
                 vertical-align: top;
@@ -347,25 +344,30 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         <div class="report-container mx-auto">
             <div class="print-only report-header">
                 <h2>Laporan Pembelian Material</h2>
-                        <p>Ringkasan nota pembelian material dalam format cetak profesional.</p>
-                    </div>
+            </div>
 
-                    <div class="print-only report-info">
-                        <div class="report-info-item">
-                            <span class="report-info-label">Periode</span>
-                            <span class="report-info-value">: <?php 
-                                if ($selectedBulan) {
-                                    $parts = explode('-', $selectedBulan);
-                                    $monthName = $bulanIndonesia[$parts[1]] ?? $parts[1];
-                                    echo htmlspecialchars($monthName . ' ' . $parts[0]);
-                                } else {
-                                    echo 'Semua Periode';
-                                }
-                            ?></span>
-                        </div>
-                        <div class="report-info-item">
-                            <span class="report-info-label">Diterbitkan</span>
-                            <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
+            <div class="print-only report-info">
+                <div>
+                    <div class="report-info-item">
+                        <span class="report-info-label">Periode</span>
+                        <span class="report-info-value">: <?php 
+                            if ($selectedBulan) {
+                                $parts = explode('-', $selectedBulan);
+                                $monthName = $bulanIndonesia[$parts[1]] ?? $parts[1];
+                                echo htmlspecialchars($monthName . ' ' . $parts[0]);
+                            } else {
+                                echo 'Semua Periode';
+                            }
+                        ?></span>
+                    </div>
+                </div>
+                <div>
+                    <div class="report-info-item" style="margin-top: 4px;">
+                        <span class="report-info-label">Diterbitkan</span>
+                        <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
+                    </div>
+                </div>
+            </div>
 
 
             <div class="card shadow-sm">
