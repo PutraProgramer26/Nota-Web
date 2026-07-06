@@ -107,9 +107,13 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         .table-responsive { overflow-x: auto; }
         .btn-print { background: #0d6efd; color: white; }
         .print-only { display: none; }
+        @page {
+            size: A4 portrait;
+            margin: 12mm;
+        }
 
         @media print {
-            * {
+            html, body {
                 margin: 0;
                 padding: 0;
             }
@@ -124,14 +128,25 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .print-only {
                 display: block !important;
             }
-            @page {
-                size: A4 portrait;
-                margin: 10mm;
-            }
             .report-container {
                 width: 100%;
                 max-width: 100%;
                 margin: 0 auto;
+            }
+            .hide-project-toko-print,
+            .hide-project-toko-print th,
+            .hide-project-toko-print td {
+                page-break-inside: avoid;
+            }
+            .hide-project-toko-print td {
+                white-space: normal;
+                word-break: break-word;
+            }
+            .hide-project-toko-print td.number-cell {
+                white-space: nowrap;
+            }
+            .hide-project-toko-print th.number-column {
+                white-space: nowrap;
             }
             .report-header {
                 text-align: center;
