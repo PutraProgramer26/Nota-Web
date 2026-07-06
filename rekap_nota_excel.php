@@ -96,6 +96,7 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         th { background: #f1f1f1; }
         .meta-table td { border: none; padding: 3px 5px; }
         .meta-table td:first-child { font-weight: bold; }
+        .number-cell { text-align: right; }
     </style>
 </head>
 <body>
@@ -137,8 +138,8 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                         <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
                         <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?></td>
                         <td><?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
-                        <td><?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
-                        <td><?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
+                        <td class="number-cell"><?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
+                        <td class="number-cell"><?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
                         <?php if ($index === 0) : ?>
                             <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                             <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
@@ -148,8 +149,8 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <tr>
-                <td colspan="7" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
-                <td><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+                <td colspan="9" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
+                <td class="number-cell"><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                 <td colspan="2"></td>
             </tr>
         </tbody>
