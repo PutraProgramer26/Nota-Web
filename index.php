@@ -68,6 +68,36 @@ if (tableExists($conn, $notaTable)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/app.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            table-layout: auto;
+        }
+        .history-table th,
+        .history-table td {
+            padding: 8px 6px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .history-table th {
+            background: #f1f3f5;
+            font-weight: bold;
+            text-align: center;
+        }
+        .history-table td {
+            background: white;
+        }
+        .history-table .number-cell {
+            text-align: right;
+            padding-right: 5px;
+        }
+        .history-table .center-cell {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div class="page-shell">
@@ -167,45 +197,45 @@ if (tableExists($conn, $notaTable)) {
                 <h5 class="mb-0">History Log Nota</h5>
             </div>
             <div class="card-body table-responsive">
-                <table class="table table-striped table-hover align-middle">
-                    <thead class="table-light">
+                <table class="history-table">
+                    <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>No Register</th>
-                            <th>Nama Barang</th>
-                            <th>Tanggal</th>
-                            <th>Project</th>
-                            <th>Toko</th>
-                            <th>Total</th>
-                            <th>Grand Total Nota</th>
-                            <th>Pemesan</th>
-                            <th>Keterangan</th>
+                            <th style="width: 5%;">ID</th>
+                            <th style="width: 8%;">No Register</th>
+                            <th style="width: 15%;">Nama Barang</th>
+                            <th style="width: 8%;">Tanggal</th>
+                            <th style="width: 10%;">Project</th>
+                            <th style="width: 10%;">Toko</th>
+                            <th style="width: 10%;">Total</th>
+                            <th style="width: 12%;">Grand Total Nota</th>
+                            <th style="width: 10%;">Pemesan</th>
+                            <th style="width: 8%;">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (count($historyLog) === 0): ?>
                             <tr>
-                                <td colspan="9" class="text-center text-muted">Belum ada data nota.</td>
+                                <td colspan="10" class="center-cell" style="padding: 20px;">Belum ada data nota.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($historyLog as $row): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['no_register']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['id']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['no_register']); ?></td>
                                     <td><?php echo htmlspecialchars($row['nama_barang']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['tanggal']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['project_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['toko_name']); ?></td>
-                                    <td><?php echo htmlspecialchars(number_format($row['total'] ?? 0, 0, ',', '.')); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['tanggal']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['project_name']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['toko_name']); ?></td>
+                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($row['total'] ?? 0, 0, '.', ',')); ?></td>
                                     <?php
                                     $registerKey = (string)($row['no_register'] ?? '');
                                     if ($registerKey === '') {
                                         $registerKey = '__empty__';
                                     }
                                     ?>
-                                    <td>Rp <?php echo htmlspecialchars(number_format($registerGrandTotals[$registerKey] ?? 0, 0, ',', '.')); ?></td>
-                                    <td><?php echo htmlspecialchars($row['pemesan']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
+                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($registerGrandTotals[$registerKey] ?? 0, 0, '.', ',')); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['pemesan']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
