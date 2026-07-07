@@ -107,6 +107,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         .table-responsive { overflow-x: auto; }
         .btn-print { background: #0d6efd; color: white; }
         .print-only { display: none; }
+        .signature-wrapper {
+            display: none !important;
+        }
         @page {
             size: A4 portrait;
             margin: 12mm;
@@ -264,7 +267,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             /* Mengatur kontainer agar tanda tangan tersebar merata */
             .signature-wrapper {
-                display: none !important;
+                display: flex !important;
                 justify-content: space-between;
                 margin-top: 50px;
                 width: 100%;
