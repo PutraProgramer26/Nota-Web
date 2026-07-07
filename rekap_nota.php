@@ -263,24 +263,24 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 white-space: nowrap;
             }
             /* Mengatur kontainer agar tanda tangan tersebar merata */
-        .signature-wrapper {
-        display: none;
-        justify-content: space-between;
-        margin-top: 50px;
-        width: 100%;
-        text-align: center;
-        flex-wrap: wrap; /* Agar responsif jika layar kecil */
-    }
+            .signature-wrapper {
+                display: none !important;
+                justify-content: space-between;
+                margin-top: 50px;
+                width: 100%;
+                text-align: center;
+                flex-wrap: wrap; /* Agar responsif jika layar kecil */
+            }
 
-    .signature-box {
-        flex: 1;
-        min-width: 100px; /* Menjaga agar tidak terlalu rapat */
-        padding: 10px;
-    }
+            .signature-box {
+                flex: 1;
+                min-width: 100px; /* Menjaga agar tidak terlalu rapat */
+                padding: 10px;
+            }
 
-    .signature-space {
-        height: 80px; /* Ruang untuk tanda tangan basah */
-    }
+            .signature-space {
+                height: 80px; /* Ruang untuk tanda tangan basah */
+            }
             .card {
                 box-shadow: none !important;
                 border: none !important;
