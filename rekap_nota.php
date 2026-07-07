@@ -464,9 +464,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     $data_ttd = [
         "Direktur" => "Joule Rizal",
         "Direktris" => "Pravita F. Anggreini",
-        "Project Manager" => "....................",
-        "Manager Material" => "....................",
-        "Material" => "...................."
+        "Project Manager" => ".........................",
+        "Manager Material" => ".........................",
+        "Material" => "........................."
     ];
 
     foreach ($data_ttd as $jabatan => $nama) {
