@@ -44,23 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nama_barang = trim($nama_barang);
             $qty = (int)($qtys[$index] ?? 0);
             $satuan = trim($satuans[$index] ?? '');
-            $harga_satuan = (float)str_replace([',', '.'], '', $harga_satuans[$index] ?? 0);
-            $keterangan = trim($keterangans[$index] ?? '');
+                $keterangan = trim($keterangans[$index] ?? '');
+                $harga_satuan = (float)str_replace([',', '.'], '', $harga_satuans[$index] ?? 0);
 
-            if ($nama_barang === '' || $qty <= 0 || $satuan === '') {
-                continue;
-            }
+                if ($nama_barang === '' || $qty <= 0 || $satuan === '') {
+                    continue;
+                }
 
-            $total_harga = $qty * $harga_satuan;
-
-            $sql = "INSERT INTO nota (no_register, nama_barang, harga_barang, jumlah_barang, satuan_barang, total_harga, project, pemesan, nama_toko, tanggal_belanja, keterangan)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            $stmt = mysqli_prepare($conn, $sql);
-            mysqli_stmt_bind_param($stmt, 'sssdsssssss', $no_register, $nama_barang, $harga_satuan, $qty, $satuan, $total_harga, $project, $pemesan, $nama_toko, $tanggal_belanja, $keterangan);
-
-            if (mysqli_stmt_execute($stmt)) {
-                $inserted = true;
+                // Harga satuan wajib diisi kecuali untuk Stock Gudang
+                if ($harga_satuan <= 0 && strtolower($keterangan) !== 'stock gudang') {
             }
         }
     }
@@ -152,9 +144,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <td><input type="text" name="nama_barang[]" class="form-control" required /></td>
                                     <td><input type="number" name="qty[]" class="form-control" min="1" required /></td>
                                     <td><input type="text" name="satuan[]" class="form-control" required /></td>
-                                    <td><input type="number" name="harga_satuan[]" class="form-control" min="0" step="0.01" required /></td>
+                                    <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                                     <td>
-                                        <select name="keterangan[]" class="form-select">
+                                        <select name="keterangan[]" class="form-select keterangan-select">
                                             <option value="Cash">Cash</option>
                                             <option value="invoice">invoice</option>
                                             <option value="stock gudang">Stock Gudang</option>
@@ -218,9 +210,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <td><input type="text" name="nama_barang[]" class="form-control" required /></td>
                 <td><input type="number" name="qty[]" class="form-control" min="1" required /></td>
                 <td><input type="text" name="satuan[]" class="form-control" required /></td>
-                <td><input type="number" name="harga_satuan[]" class="form-control" min="0" step="0.01" required /></td>
+                <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                 <td>
-                    <select name="keterangan[]" class="form-select">
+                    <select name="keterangan[]" class="form-select keterangan-select">
                         <option value="Cash">Cash</option>
                         <option value="invoice">invoice</option>
                         <option value="stock gudang">Stock Gudang</option>
@@ -228,7 +220,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </td>
                 <td><button type="button" class="btn btn-danger btn-sm removeRow">Hapus</button></td>`;
             tableBody.appendChild(row);
+            attachKeteranganListeners(row);
             updateTotalBelanja();
+        }
+
+        function attachKeteranganListeners(row) {
+            const keteranganSelect = row.querySelector('.keterangan-select');
+            const hargaInput = row.querySelector('.harga-satuan');
+
+            function updateHargaRequired() {
+                const isStockGudang = keteranganSelect.value.toLowerCase() === 'stock gudang';
+                if (isStockGudang) {
+                    hargaInput.removeAttribute('required');
+                    hargaInput.classList.add('border-warning');
+                } else {
+                    hargaInput.setAttribute('required', 'required');
+                    hargaInput.classList.remove('border-warning');
+                }
+            }
+
+            keteranganSelect.addEventListener('change', updateHargaRequired);
+            updateHargaRequired();
         }
 
         function updateTotalBelanja() {
@@ -255,6 +267,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 e.target.closest('tr').remove();
                 updateTotalBelanja();
             }
+        });
+
+        // Attach listeners to existing rows
+        document.querySelectorAll('#barangTable tbody tr').forEach(row => {
+            attachKeteranganListeners(row);
         });
 
         document.getElementById('addRow').addEventListener('click', addBarangRow);
