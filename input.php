@@ -44,15 +44,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nama_barang = trim($nama_barang);
             $qty = (int)($qtys[$index] ?? 0);
             $satuan = trim($satuans[$index] ?? '');
-                $keterangan = trim($keterangans[$index] ?? '');
-                $harga_satuan = (float)str_replace([',', '.'], '', $harga_satuans[$index] ?? 0);
+            $keterangan = trim($keterangans[$index] ?? '');
+            $harga_satuan = (float)str_replace([',', '.'], '', $harga_satuans[$index] ?? 0);
 
-                if ($nama_barang === '' || $qty <= 0 || $satuan === '') {
-                    continue;
-                }
+            if ($nama_barang === '' || $qty <= 0 || $satuan === '') {
+                continue;
+            }
 
-                // Harga satuan wajib diisi kecuali untuk Stock Gudang
-                if ($harga_satuan <= 0 && strtolower($keterangan) !== 'stock gudang') {
+            // Harga satuan wajib diisi kecuali untuk Stock Gudang
+            if (strtolower($keterangan) !== 'stock gudang' && $harga_satuan <= 0) {
+                continue;
+            }
+
+            $total_harga = $qty * $harga_satuan;
+
+            $sql = "INSERT INTO nota (no_register, nama_barang, harga_barang, jumlah_barang, satuan_barang, total_harga, project, pemesan, nama_toko, tanggal_belanja, keterangan)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, 'sssdsssssss', $no_register, $nama_barang, $harga_satuan, $qty, $satuan, $total_harga, $project, $pemesan, $nama_toko, $tanggal_belanja, $keterangan);
+
+            if (mysqli_stmt_execute($stmt)) {
+                $inserted = true;
             }
         }
     }
@@ -98,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <form method="post">
+                <form method="post" novalidate id="formNota">
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label">Nomor Register</label>
@@ -140,10 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><input type="text" name="nama_barang[]" class="form-control" required /></td>
-                                    <td><input type="number" name="qty[]" class="form-control" min="1" required /></td>
-                                    <td><input type="text" name="satuan[]" class="form-control" required /></td>
+                                        <tr>
+                                    <td><input type="text" name="nama_barang[]" class="form-control" /></td>
+                                    <td><input type="number" name="qty[]" class="form-control" min="1" /></td>
+                                    <td><input type="text" name="satuan[]" class="form-control" /></td>
                                     <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                                     <td>
                                         <select name="keterangan[]" class="form-select keterangan-select">
@@ -207,9 +220,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const tableBody = document.querySelector('#barangTable tbody');
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><input type="text" name="nama_barang[]" class="form-control" required /></td>
-                <td><input type="number" name="qty[]" class="form-control" min="1" required /></td>
-                <td><input type="text" name="satuan[]" class="form-control" required /></td>
+                <td><input type="text" name="nama_barang[]" class="form-control" /></td>
+                <td><input type="number" name="qty[]" class="form-control" min="1" /></td>
+                <td><input type="text" name="satuan[]" class="form-control" /></td>
                 <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                 <td>
                     <select name="keterangan[]" class="form-select keterangan-select">
@@ -269,9 +282,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
+        // Custom form validation
+        function validateFormBefore() {
+            const rows = document.querySelectorAll('#barangTable tbody tr');
+            let hasValidRow = false;
+
+            for (let row of rows) {
+                const namaBarang = row.querySelector('input[name="nama_barang[]"]').value.trim();
+                const qty = row.querySelector('input[name="qty[]"]').value;
+                const satuan = row.querySelector('input[name="satuan[]"]').value.trim();
+                const hargaSatuan = row.querySelector('input[name="harga_satuan[]"]').value;
+                const keterangan = row.querySelector('select[name="keterangan[]"]').value.toLowerCase();
+
+                // Skip empty rows
+                if (!namaBarang || !qty || !satuan) {
+                    continue;
+                }
+
+                // For stock gudang, harga boleh kosong
+                if (keterangan === 'stock gudang') {
+                    hasValidRow = true;
+                    continue;
+                }
+
+                // For other keterangan, harga wajib diisi
+                if (!hargaSatuan || parseFloat(hargaSatuan) <= 0) {
+                    alert('Harga Satuan wajib diisi untuk keterangan Cash atau Invoice!');
+                    return false;
+                }
+
+                hasValidRow = true;
+            }
+
+            if (!hasValidRow) {
+                alert('Minimal ada satu barang yang harus diisi dengan lengkap!');
+                return false;
+            }
+
+            return true;
+        }
+
         // Attach listeners to existing rows
         document.querySelectorAll('#barangTable tbody tr').forEach(row => {
             attachKeteranganListeners(row);
+        });
+
+        // Add form submit validation
+        document.getElementById('formNota').addEventListener('submit', function(e) {
+            if (!validateFormBefore()) {
+                e.preventDefault();
+                return false;
+            }
         });
 
         document.getElementById('addRow').addEventListener('click', addBarangRow);
