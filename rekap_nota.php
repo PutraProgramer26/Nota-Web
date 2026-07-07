@@ -83,6 +83,14 @@ foreach ($rows as $row) {
 }
 $notaSummaries = array_values($notaSummaries);
 
+// Hitung PPN 11% khusus untuk Toko Cahaya Timika
+$ppn = 0;
+$totalAkhir = $grandTotal;
+if ($selectedToko === 'Cahaya Timika') {
+    $ppn = $grandTotal * 0.11;
+    $totalAkhir = $grandTotal + $ppn;
+}
+
 $tokoList = mysqli_query($conn, "SELECT DISTINCT nama_toko FROM nota WHERE nama_toko IS NOT NULL AND nama_toko <> '' ORDER BY nama_toko");
 $projectList = mysqli_query($conn, "SELECT DISTINCT project FROM nota WHERE project IS NOT NULL AND project <> '' ORDER BY project");
 $bulanList = mysqli_query($conn, "SELECT DISTINCT DATE_FORMAT(tanggal_belanja, '%Y-%m') AS bulan FROM nota WHERE tanggal_belanja IS NOT NULL ORDER BY bulan DESC");
@@ -361,7 +369,15 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         </div>
 
         <div class="alert alert-info d-flex justify-content-between align-items-center mb-3 no-print">
-            <span><strong>Total Harga Hasil Rekap:</strong> Rp <?php echo number_format($grandTotal, 0, ',', '.'); ?></span>
+            <div>
+                <div><strong>Total Harga Hasil Rekap:</strong> Rp <?php echo number_format($grandTotal, 0, ',', '.'); ?></div>
+                <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
+                    <div style="margin-top: 8px; font-size: 14px;">
+                        <div><strong>PPN 11%:</strong> Rp <?php echo number_format($ppn, 0, ',', '.'); ?></div>
+                        <div style="margin-top: 4px; color: #d32f2f;"><strong>Total Keseluruhan (Grand Total + PPN):</strong> Rp <?php echo number_format($totalAkhir, 0, ',', '.'); ?></div>
+                    </div>
+                <?php endif; ?>
+            </div>
             <span class="text-muted">Jumlah data: <?php echo count($rows); ?></span>
         </div>
 
@@ -449,10 +465,22 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
-                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN :</td>
+                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                                     <td colspan="3"></td>
                                 </tr>
+                                <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
+                                <tr class="total-row">
+                                    <td colspan="7" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
+                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr class="total-row" style="background-color: #fff3cd; font-weight: bold;">
+                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
+                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -464,9 +492,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     $data_ttd = [
         "Direktur" => "Joule Rizal",
         "Direktris" => "Pravita F. Anggreini",
-        "Project Manager" => ".........................",
-        "Manager Material" => ".........................",
-        "Material" => "........................."
+        "Project Manager" => "....................",
+        "Manager Material" => "....................",
+        "Material" => "...................."
     ];
 
     foreach ($data_ttd as $jabatan => $nama) {
