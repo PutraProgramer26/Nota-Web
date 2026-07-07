@@ -7,6 +7,26 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+$isSuperAdmin = ($_SESSION['role'] ?? 'user') === 'superadmin';
+
+// Handle delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    if (!$isSuperAdmin) {
+        die('Unauthorized');
+    }
+    
+    $no_register = trim($_POST['no_register'] ?? '');
+    if ($no_register !== '') {
+        $sql_delete = "DELETE FROM nota WHERE no_register = ?";
+        $stmt = mysqli_prepare($conn, $sql_delete);
+        mysqli_stmt_bind_param($stmt, 's', $no_register);
+        if (mysqli_stmt_execute($stmt)) {
+            header('Location: lihat_nota.php?deleted=1');
+            exit;
+        }
+    }
+}
+
 $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan_barang, total_harga, project, pemesan, nama_toko, tanggal_belanja, keterangan
         FROM nota
         ORDER BY tanggal_belanja DESC, no_register DESC";
@@ -112,6 +132,21 @@ $rows = array_values($notaSummaries);
         .nota-table td:nth-child(11) {
             min-width: 85px;
         }
+        /* Action buttons */
+        .nota-table .action-cell {
+            min-width: 120px;
+            text-align: center;
+        }
+        .action-cell .btn-group {
+            gap: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .action-cell .btn {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
         /* Responsive untuk header */
         @media (max-width: 1200px) {
             .nota-table th,
@@ -148,6 +183,18 @@ $rows = array_values($notaSummaries);
                         <a href="rekap_nota.php" class="btn btn-outline-secondary btn-sm">Rekap Nota</a>
                     </div>
                 </div>
+                <?php if (isset($_GET['deleted'])) : ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Berhasil!</strong> Nota telah dihapus.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($_GET['updated'])) : ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Berhasil!</strong> Nota telah diperbarui.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <?php endif; ?>
         <div class="card shadow-sm">
             <div class="card-body table-responsive">
                 <table class="nota-table">
@@ -164,6 +211,7 @@ $rows = array_values($notaSummaries);
                             <th>Grand Total</th>
                             <th>Pemesan</th>
                             <th>Keterangan</th>
+                            <?php if ($isSuperAdmin) : ?><th>Aksi</th><?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -187,6 +235,18 @@ $rows = array_values($notaSummaries);
                                         <?php if ($index === 0) : ?>
                                             <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                                             <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
+                                            <?php if ($isSuperAdmin) : ?>
+                                            <td class="action-cell" rowspan="<?php echo $rowspan; ?>">
+                                                <div class="btn-group">
+                                                    <a href="edit_nota.php?no_register=<?php echo urlencode($summary['no_register']); ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                    <form method="post" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus nota ini?');">
+                                                        <input type="hidden" name="action" value="delete">
+                                                        <input type="hidden" name="no_register" value="<?php echo htmlspecialchars($summary['no_register']); ?>">
+                                                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                         <td class="center-cell"><?php echo htmlspecialchars($item['keterangan'] ?: '-'); ?></td>
                                     </tr>
