@@ -13,6 +13,32 @@ if (($_SESSION['role'] ?? 'user') !== 'superadmin') {
 
 include 'koneksi.php';
 
+function normalizeDecimalValue($value) {
+    $value = trim((string)($value ?? ''));
+    if ($value === '') {
+        return 0.0;
+    }
+
+    $value = str_replace(' ', '', $value);
+    $hasComma = strpos($value, ',') !== false;
+    $hasDot = strpos($value, '.') !== false;
+
+    if ($hasComma && $hasDot) {
+        $lastComma = strrpos($value, ',');
+        $lastDot = strrpos($value, '.');
+        if ($lastComma > $lastDot) {
+            $value = str_replace('.', '', $value);
+            $value = str_replace(',', '.', $value);
+        } else {
+            $value = str_replace(',', '', $value);
+        }
+    } elseif ($hasComma) {
+        $value = str_replace(',', '.', $value);
+    }
+
+    return (float)$value;
+}
+
 $no_register = $_GET['no_register'] ?? '';
 $message = '';
 $items = [];
@@ -58,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate items
         foreach ($barang_names as $index => $nama_barang) {
             $nama_barang = trim($nama_barang);
-            $qty = (int)($qtys[$index] ?? 0);
+            $qty = normalizeDecimalValue($qtys[$index] ?? 0);
             $satuan = trim($satuans[$index] ?? '');
             $keterangan = trim($keterangans[$index] ?? '');
             $harga_satuan = (float)str_replace([',', '.'], '', $harga_satuans[$index] ?? 0);
@@ -98,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = true;
             foreach ($newItems as $item) {
                 $insert_stmt = mysqli_prepare($conn, $insert_sql);
-                mysqli_stmt_bind_param($insert_stmt, 'sssdsssssss', 
+                mysqli_stmt_bind_param($insert_stmt, 'ssddsdsssss', 
                     $no_register, 
                     $item['nama_barang'], 
                     $item['harga_barang'],
@@ -214,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php foreach ($items as $item) : ?>
                                 <tr>
                                     <td><input type="text" name="nama_barang[]" class="form-control" value="<?php echo htmlspecialchars($item['nama_barang'] ?? ''); ?>" /></td>
-                                    <td><input type="number" name="qty[]" class="form-control" min="1" value="<?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?>" /></td>
+                                    <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,-]+" placeholder="Contoh: 1,2" value="<?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?>" /></td>
                                     <td><input type="text" name="satuan[]" class="form-control" value="<?php echo htmlspecialchars($item['satuan_barang'] ?? ''); ?>" /></td>
                                     <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" value="<?php echo htmlspecialchars($item['harga_barang'] ?? 0); ?>" /></td>
                                     <td>
@@ -249,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><input type="text" name="nama_barang[]" class="form-control" /></td>
-                <td><input type="number" name="qty[]" class="form-control" min="1" /></td>
+                <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,-]+" placeholder="Contoh: 1,2" /></td>
                 <td><input type="text" name="satuan[]" class="form-control" /></td>
                 <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                 <td>
@@ -284,12 +310,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             updateHargaRequired();
         }
 
+        function parseDecimalValue(value) {
+            if (value === null || value === undefined) {
+                return 0;
+            }
+
+            return parseFloat(String(value).replace(',', '.')) || 0;
+        }
+
         function updateTotalBelanja() {
             const rows = document.querySelectorAll('#barangTable tbody tr');
             let total = 0;
 
             rows.forEach(row => {
-                const qty = parseFloat(row.querySelector('input[name="qty[]"]').value) || 0;
+                const qty = parseDecimalValue(row.querySelector('input[name="qty[]"]').value);
                 const harga = parseFloat(row.querySelector('input[name="harga_satuan[]"]').value) || 0;
                 total += qty * harga;
             });
@@ -318,12 +352,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             for (let row of rows) {
                 const namaBarang = row.querySelector('input[name="nama_barang[]"]').value.trim();
                 const qty = row.querySelector('input[name="qty[]"]').value;
+                const qtyValue = parseDecimalValue(qty);
                 const satuan = row.querySelector('input[name="satuan[]"]').value.trim();
                 const hargaSatuan = row.querySelector('input[name="harga_satuan[]"]').value;
                 const keterangan = row.querySelector('select[name="keterangan[]"]').value.toLowerCase();
 
                 // Skip empty rows
-                if (!namaBarang || !qty || !satuan) {
+                if (!namaBarang || !qty || qtyValue <= 0 || !satuan) {
                     continue;
                 }
 
