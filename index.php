@@ -34,7 +34,8 @@ if (tableExists($conn, $notaTable)) {
     $projectCount = fetchOne($conn, "SELECT COUNT(DISTINCT project) AS total_projects FROM {$notaTable}")['total_projects'] ?? 0;
     $notaLogCount = fetchOne($conn, "SELECT COUNT(*) AS total_nota_log FROM {$notaTable}")['total_nota_log'] ?? 0;
 
-    $notaPerProject = fetchAllRows($conn, "SELECT project AS label, COUNT(*) AS value
+    $notaPerProject = fetchAllRows($conn, "SELECT project AS label,
+        COUNT(DISTINCT CASE WHEN TRIM(COALESCE(no_register, '')) <> '' THEN no_register END) AS value
         FROM {$notaTable}
         GROUP BY project
         ORDER BY value DESC");
