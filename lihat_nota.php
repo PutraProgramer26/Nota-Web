@@ -27,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+$searchTerm = trim($_GET['search'] ?? '');
+$searchTermLower = strtolower($searchTerm);
+
 $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan_barang, total_harga, project, pemesan, nama_toko, tanggal_belanja, keterangan
         FROM nota
         ORDER BY tanggal_belanja DESC, no_register DESC";
@@ -70,6 +73,32 @@ foreach ($allRows as $row) {
 
 // Convert to indexed array
 $rows = array_values($notaSummaries);
+
+if ($searchTermLower !== '') {
+    $filteredRows = [];
+    foreach ($rows as $summary) {
+        $matches = false;
+        $summaryText = strtolower((string)($summary['no_register'] ?? ''));
+
+        if (strpos($summaryText, $searchTermLower) !== false) {
+            $matches = true;
+        } else {
+            foreach ($summary['items'] as $item) {
+                $itemName = strtolower((string)($item['nama_barang'] ?? ''));
+                if (strpos($itemName, $searchTermLower) !== false) {
+                    $matches = true;
+                    break;
+                }
+            }
+        }
+
+        if ($matches) {
+            $filteredRows[] = $summary;
+        }
+    }
+
+    $rows = $filteredRows;
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -195,9 +224,23 @@ $rows = array_values($notaSummaries);
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
-        <div class="card shadow-sm">
-            <div class="card-body table-responsive">
-                <table class="nota-table">
+
+                <form method="get" class="row g-2 align-items-end mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label mb-1">Cari Nota</label>
+                        <input type="text" name="search" class="form-control" value="<?php echo htmlspecialchars($searchTerm); ?>" placeholder="Ketik nama barang atau no register" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Cari</button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="lihat_nota.php" class="btn btn-outline-secondary w-100">Reset</a>
+                    </div>
+                </form>
+
+                <div class="card shadow-sm">
+                    <div class="card-body table-responsive">
+                        <table class="nota-table">
                     <thead>
                         <tr>
                             <th>No Register</th>
@@ -216,7 +259,7 @@ $rows = array_values($notaSummaries);
                     </thead>
                     <tbody>
                         <?php if (empty($rows)) : ?>
-                            <tr><td colspan="11" class="center-cell" style="padding: 20px;">Belum ada data nota.</td></tr>
+                            <tr><td colspan="11" class="center-cell" style="padding: 20px;"><?php echo $searchTerm !== '' ? 'Tidak ada nota yang sesuai pencarian.' : 'Belum ada data nota.'; ?></td></tr>
                         <?php else : ?>
                             <?php foreach ($rows as $summary) : ?>
                                 <?php $rowspan = count($summary['items']); ?>
@@ -255,6 +298,8 @@ $rows = array_values($notaSummaries);
                         <?php endif; ?>
                     </tbody>
                 </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
