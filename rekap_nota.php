@@ -146,6 +146,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 width: 100%;
                 max-width: 100%;
                 margin: 0 auto;
+                overflow: hidden;
             }
             .hide-project-toko-print,
             .hide-project-toko-print th,
@@ -216,17 +217,19 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 text-align: left;
             }
             table {
-                font-size: 8.5pt;
+                font-size: 8pt;
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 10px;
-                table-layout: auto;
+                table-layout: fixed;
             }
             th, td {
-                padding: 5px 6px;
+                padding: 4px 5px;
                 border: 1px solid #000;
                 text-align: left;
                 vertical-align: top;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             th {
                 background: #e8e8e8;
@@ -278,6 +281,11 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .material-table td:first-child {
                 white-space: normal;
                 min-width: 180px;
+                word-break: break-word;
+            }
+            .hide-project-toko-print th,
+            .hide-project-toko-print td {
+                white-space: normal;
                 word-break: break-word;
             }
             .material-table .number-cell {
@@ -448,13 +456,12 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                 <th class="number-column" style="min-width: 100px;">Harga Total</th>
                                 <th class="number-column" style="min-width: 110px;">Grand Total</th>
                                 <th style="min-width: 80px;">Order By</th>
-                                <th style="min-width: 65px;">Ket</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($notaSummaries)) : ?>
                                 <tr>
-                                    <td colspan="11" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
+                                    <td colspan="10" class="center-cell" style="padding: 20px;">Tidak ada data yang sesuai filter</td>
                                 </tr>
                             <?php else : ?>
                                 <?php foreach ($notaSummaries as $summary) : ?>
@@ -474,26 +481,25 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                             <?php if ($index === 0) : ?>
                                                 <td class="number-cell" rowspan="<?php echo $rowspan; ?>">Rp <?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                                                 <td class="center-cell" style="font-size: 8pt;" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                                                <td class="center-cell" style="font-size: 8pt;" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
                                             <?php endif; ?>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
                                 <tr class="total-row">
-                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL :</td>
+                                    <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
-                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
                                 </tr>
                                 <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
                                 <tr class="total-row">
-                                    <td colspan="7" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
+                                    <td colspan="6" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
-                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
                                 </tr>
                                 <tr class="total-row" style="background-color: #fff3cd; font-weight: bold;">
-                                    <td colspan="7" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
+                                    <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
                                     <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
-                                    <td colspan="3"></td>
+                                    <td colspan="2"></td>
                                 </tr>
                                 <?php endif; ?>
                             <?php endif; ?>

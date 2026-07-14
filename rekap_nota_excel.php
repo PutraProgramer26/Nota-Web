@@ -135,7 +135,6 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <th class="number-column" style="min-width: 110px;">Harga Total</th>
                 <th class="number-column" style="min-width: 120px;">Grand Total</th>
                 <th style="min-width: 80px;">Order By</th>
-                <th style="min-width: 65px;">Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -157,13 +156,12 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                         <?php if ($index === 0) : ?>
                             <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(number_format($summary['grand_total'] ?? 0, 0, '.', ',')); ?></td>
                             <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['pemesan'] ?: '-'); ?></td>
-                            <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['keterangan'] ?? '-'); ?></td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <tr>
-                <td colspan="9" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
+                <td colspan="8" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
                 <td class="number-cell"><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                 <td colspan="2"></td>
             </tr>
