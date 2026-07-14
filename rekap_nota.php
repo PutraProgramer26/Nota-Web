@@ -162,11 +162,19 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .hide-project-toko-print th.number-column {
                 white-space: nowrap;
             }
+            .report-sheet {
+                display: block;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
             .report-header {
                 text-align: center;
                 margin-bottom: 8px;
                 border-bottom: 2px solid #000;
                 padding-bottom: 8px;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                page-break-after: avoid;
             }
             .report-header h2 { 
                 margin: 0; 
@@ -189,6 +197,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 font-size: 9pt;
                 border-bottom: 1px solid #000;
                 padding-bottom: 10px;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                page-break-after: avoid;
             }
             .report-info-item {
                 display: flex;
@@ -296,6 +307,10 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 box-shadow: none !important;
                 border: none !important;
             }
+            .report-table-block {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
             .card-body { 
                 padding: 0 !important; 
             }
@@ -382,43 +397,43 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         </div>
 
         <div class="report-container mx-auto">
-            <div class="print-only report-header">
-                <h2>Laporan Pembelian Material</h2>
-            </div>
+            <div class="report-sheet">
+                <div class="print-only report-header">
+                    <h2>Laporan Pembelian Material</h2>
+                </div>
 
-            <div class="print-only report-info">
-                <div>
-                    <div class="report-info-item">
-                        <span class="report-info-label">Periode</span>
-                        <span class="report-info-value">: <?php 
-                            if ($selectedBulan) {
-                                $parts = explode('-', $selectedBulan);
-                                $monthName = $bulanIndonesia[$parts[1]] ?? $parts[1];
-                                echo htmlspecialchars($monthName . ' ' . $parts[0]);
-                            } else {
-                                echo 'Semua Periode';
-                            }
-                        ?></span>
+                <div class="print-only report-info">
+                    <div>
+                        <div class="report-info-item">
+                            <span class="report-info-label">Periode</span>
+                            <span class="report-info-value">: <?php 
+                                if ($selectedBulan) {
+                                    $parts = explode('-', $selectedBulan);
+                                    $monthName = $bulanIndonesia[$parts[1]] ?? $parts[1];
+                                    echo htmlspecialchars($monthName . ' ' . $parts[0]);
+                                } else {
+                                    echo 'Semua Periode';
+                                }
+                            ?></span>
+                        </div>
+                        <div class="report-info-item" style="margin-top: 4px;">
+                            <span class="report-info-label">Toko</span>
+                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></span>
+                        </div>
                     </div>
-                    <div class="report-info-item" style="margin-top: 4px;">
-                        <span class="report-info-label">Toko</span>
-                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></span>
+                    <div>
+                        <div class="report-info-item" style="margin-top: 4px;">
+                            <span class="report-info-label">Diterbitkan</span>
+                            <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
+                        </div>
+                        <div class="report-info-item" style="margin-top: 4px;">
+                            <span class="report-info-label">Project</span>
+                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="report-info-item" style="margin-top: 4px;">
-                        <span class="report-info-label">Diterbitkan</span>
-                        <span class="report-info-value">: Timika, <?php echo date('d F Y'); ?></span>
-                    </div>
-                    <div class="report-info-item" style="margin-top: 4px;">
-                        <span class="report-info-label">Project</span>
-                        <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
-                    </div>
-                </div>
-            </div>
 
-
-            <div class="card shadow-sm">
+                <div class="card shadow-sm report-table-block">
                 <div class="card-body table-responsive">
                     <table class="hide-project-toko-print">
                         <thead>
@@ -484,6 +499,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                             <?php endif; ?>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
                 </div>
             </div>
 

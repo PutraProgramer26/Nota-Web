@@ -101,14 +101,27 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
     </style>
 </head>
 <body>
-    <table class="meta-table">
-        <tr><td>Periode</td><td><?php echo htmlspecialchars($periodeLabel); ?></td></tr>
-        <tr><td>Diterbitkan</td><td><?php echo date('d F Y'); ?></td></tr>
-        <tr><td>Toko</td><td><?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></td></tr>
-        <tr><td>Project</td><td><?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></td></tr>
-    </table>
-    <br />
     <table>
+        <tr>
+            <td colspan="12" style="font-weight:bold; font-size:12pt; text-align:center;">Laporan Pembelian Material</td>
+        </tr>
+        <tr>
+            <td><strong>Periode</strong></td>
+            <td colspan="11"><?php echo htmlspecialchars($periodeLabel); ?></td>
+        </tr>
+        <tr>
+            <td><strong>Diterbitkan</strong></td>
+            <td colspan="11"><?php echo date('d F Y'); ?></td>
+        </tr>
+        <tr>
+            <td><strong>Toko</strong></td>
+            <td colspan="11"><?php echo htmlspecialchars($selectedToko ?: 'Semua Toko'); ?></td>
+        </tr>
+        <tr>
+            <td><strong>Project</strong></td>
+            <td colspan="11"><?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></td>
+        </tr>
+        <tr><td colspan="12" style="height:8px; border:none;"></td></tr>
         <thead>
             <tr>
                 <th>No Register</th>
