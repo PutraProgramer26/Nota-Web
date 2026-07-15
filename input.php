@@ -132,7 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
         <?php if (!empty($message)) : ?>
-            <div class="alert alert-info"><?php echo htmlspecialchars($message); ?></div>
+            <div class="alert <?php echo (stripos($message, 'berhasil') !== false ? 'alert-success' : 'alert-info'); ?>" id="saveMessage">
+                <?php echo htmlspecialchars($message); ?>
+            </div>
         <?php endif; ?>
 
         <div class="card shadow-sm">
@@ -371,6 +373,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         document.getElementById('addRow').addEventListener('click', addBarangRow);
+
+        const saveMessage = document.getElementById('saveMessage');
+        if (saveMessage && saveMessage.textContent.toLowerCase().includes('berhasil')) {
+            setTimeout(function () {
+                window.location.href = 'input.php';
+            }, 2000);
+        }
 
         generateNoRegister();
         updateTotalBelanja();
