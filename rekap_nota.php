@@ -154,7 +154,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 max-width: 100%;
                 margin: 0 auto;
                 overflow: hidden;
-            }
+            }a
             .hide-project-toko-print,
             .hide-project-toko-print th,
             .hide-project-toko-print td {
