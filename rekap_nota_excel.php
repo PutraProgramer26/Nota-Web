@@ -165,6 +165,29 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <td class="number-cell"><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                 <td colspan="2"></td>
             </tr>
+            <tr>
+                <td colspan="12" style="border:none; height:24px;"></td>
+            </tr>
+            <tr>
+                <?php
+                $data_ttd = [
+                    'Direktur' => 'Joule Rizal',
+                    'Direktris' => 'Pravita F. Anggreini',
+                    'Project Manager' => '....................',
+                    'Manager Material' => '....................',
+                    'Material' => '....................'
+                ];
+                $ttdKeys = array_keys($data_ttd);
+                foreach ($ttdKeys as $index => $jabatan) :
+                    $colspan = $index === count($ttdKeys) - 1 ? 4 : 2;
+                ?>
+                    <td colspan="<?php echo $colspan; ?>" style="text-align:center; border:none; vertical-align:top;">
+                        <div style="font-weight:bold; margin-bottom: 36px;"><?php echo htmlspecialchars($jabatan); ?></div>
+                        <div style="height: 60px;"></div>
+                        <div>(<?php echo htmlspecialchars($data_ttd[$jabatan]); ?>)</div>
+                    </td>
+                <?php endforeach; ?>
+            </tr>
         </tbody>
     </table>
 </body>
