@@ -109,6 +109,8 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         .number-cell { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
         th.number-column { white-space: nowrap; min-width: 110px; }
         .total-label { text-align: right; font-weight: bold; }
+        a[href]::after { content: none !important; }
+        a { color: inherit !important; text-decoration: none !important; }
     </style>
 </head>
 <body>
