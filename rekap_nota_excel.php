@@ -12,6 +12,9 @@ $selectedProject = $_GET['project'] ?? '';
 $selectedBulan = $_GET['bulan'] ?? '';
 $selectedKeterangan = $_GET['keterangan'] ?? '';
 
+$ppn = 0;
+$totalAkhir = 0;
+
 $sql = "SELECT no_register, nama_barang, harga_barang, jumlah_barang, satuan_barang, total_harga, project, pemesan, nama_toko, tanggal_belanja, keterangan
         FROM nota WHERE 1=1";
 $params = [];
@@ -81,6 +84,13 @@ foreach ($rows as $row) {
 }
 $notaSummaries = array_values($notaSummaries);
 
+if ($selectedToko === 'Cahaya Timika') {
+    $ppn = $grandTotal * 0.11;
+    $totalAkhir = $grandTotal + $ppn;
+} else {
+    $totalAkhir = $grandTotal;
+}
+
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename=rekap_nota.xls');
 echo "\xEF\xBB\xBF";
@@ -96,8 +106,9 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         th { background: #f1f1f1; }
         .meta-table td { border: none; padding: 3px 5px; }
         .meta-table td:first-child { font-weight: bold; }
-        .number-cell { text-align: right; white-space: nowrap; }
+        .number-cell { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
         th.number-column { white-space: nowrap; min-width: 110px; }
+        .total-label { text-align: right; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -161,10 +172,22 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <?php endforeach; ?>
             <?php endforeach; ?>
             <tr>
-                <td colspan="8" style="text-align:right; font-weight:bold;">TOTAL KESELURUHAN</td>
-                <td class="number-cell"><?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+                <td colspan="8" class="total-label">TOTAL</td>
+                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                 <td colspan="2"></td>
             </tr>
+            <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
+            <tr>
+                <td colspan="8" class="total-label">PPN 11%</td>
+                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="8" class="total-label">TOTAL KESELURUHAN (Grand Total + PPN)</td>
+                <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
+                <td colspan="2"></td>
+            </tr>
+            <?php endif; ?>
             <tr>
                 <td colspan="12" style="border:none; height:24px;"></td>
             </tr>

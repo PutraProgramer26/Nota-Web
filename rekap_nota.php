@@ -221,15 +221,15 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 10px;
-                table-layout: fixed;
+                table-layout: auto;
             }
             th, td {
                 padding: 4px 5px;
                 border: 1px solid #000;
                 text-align: left;
                 vertical-align: top;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                overflow: visible;
+                text-overflow: unset;
             }
             th {
                 background: #e8e8e8;
@@ -247,10 +247,15 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 text-align: right;
                 padding-right: 5px;
                 white-space: nowrap;
+                font-variant-numeric: tabular-nums;
             }
             th.number-column {
                 white-space: nowrap;
-                min-width: 110px;
+                min-width: 120px;
+            }
+            tr.total-row td.number-cell {
+                font-weight: bold;
+                font-variant-numeric: tabular-nums;
             }
             .center-cell {
                 text-align: center;
@@ -292,33 +297,24 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 text-align: right;
                 white-space: nowrap;
             }
-            /* Menjaga tanda tangan tetap dalam satu baris dan tidak terpisah saat print */
+            /* Mengatur kontainer agar tanda tangan tersebar merata */
             .signature-wrapper {
                 display: flex !important;
-                justify-content: space-around;
-                align-items: flex-start;
-                margin-top: 25px;
+                justify-content: space-between;
+                margin-top: 50px;
                 width: 100%;
                 text-align: center;
-                flex-wrap: nowrap;
-                page-break-inside: avoid;
-                break-inside: avoid;
-                break-after: avoid;
-                gap: 8px;
+                flex-wrap: wrap; /* Agar responsif jika layar kecil */
             }
 
             .signature-box {
-                flex: 1 1 0;
-                min-width: 0;
-                padding: 8px;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                flex: 1;
+                min-width: 100px; /* Menjaga agar tidak terlalu rapat */
+                padding: 10px;
             }
 
             .signature-space {
-                height: 70px;
-                margin-bottom: 5px;
-                border-bottom: 1px solid #000;
+                height: 80px; /* Ruang untuk tanda tangan basah */
             }
             .card {
                 box-shadow: none !important;
@@ -496,18 +492,18 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                 <?php endforeach; ?>
                                 <tr class="total-row">
                                     <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL :</td>
-                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
                                     <td colspan="2"></td>
                                 </tr>
                                 <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
                                 <tr class="total-row">
                                     <td colspan="6" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
-                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
+                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
                                     <td colspan="2"></td>
                                 </tr>
                                 <tr class="total-row" style="background-color: #fff3cd; font-weight: bold;">
                                     <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
-                                    <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
+                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
                                     <td colspan="2"></td>
                                 </tr>
                                 <?php endif; ?>
@@ -525,8 +521,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     $data_ttd = [
         "Direktur" => "Joule Rizal",
         "Direktris" => "Pravita F. Anggreini",
-        "Project Manager" => "................",
-        "Manager Material" => "................",
+        "Project Manager" => "....................",
+        "Manager Material" => "....................",
         "Material" => "...................."
     ];
 
