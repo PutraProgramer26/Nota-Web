@@ -1,4 +1,4 @@
-<?php
+a<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -184,6 +184,7 @@ if (tableExists($conn, $notaTable)) {
             <a class="nav-link" href="input.php"><span class="nav-icon">✎</span><span class="nav-text">Input Nota</span></a>
             <a class="nav-link" href="lihat_nota.php"><span class="nav-icon">▤</span><span class="nav-text">Lihat Nota</span></a>
             <a class="nav-link" href="rekap_nota.php"><span class="nav-icon">◫</span><span class="nav-text">Rekap Nota</span></a>
+            <a class="nav-link" href="summary_project.php"><span class="nav-icon">☰</span><span class="nav-text">Summary Project</span></a>
             <a class="nav-link" href="pengaturan_project.php"><span class="nav-icon">⚙</span><span class="nav-text">Pengaturan Project</span></a>
             <a class="nav-link" href="manajement_user.php"><span class="nav-icon">👤</span><span class="nav-text">Manajement User</span></a>
             <div class="nav-section-label mt-2">Akun</div>

@@ -183,6 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="input.php" class="btn btn-outline-secondary btn-sm">Input Nota</a>
                 <a href="lihat_nota.php" class="btn btn-outline-secondary btn-sm">Lihat Nota</a>
                 <a href="rekap_nota.php" class="btn btn-outline-secondary btn-sm">Rekap Nota</a>
+                <a href="summary_project.php" class="btn btn-outline-secondary btn-sm">Summary Project</a>
             </div>
         </div>
 
