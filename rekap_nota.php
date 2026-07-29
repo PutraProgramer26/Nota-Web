@@ -312,6 +312,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 width: 100%;
                 text-align: center;
                 flex-wrap: wrap; /* Agar responsif jika layar kecil */
+                page-break-before: avoid; /* usahakan tanda tangan tidak sendirian di halaman baru */
+                page-break-inside: avoid;
             }
 
             .signature-box {
@@ -330,6 +332,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             .report-table-block {
                 page-break-inside: avoid;
                 break-inside: avoid;
+                page-break-after: avoid; /* usahakan tabel terakhir tetap bersama tanda tangan jika memungkinkan */
             }
             .card-body { 
                 padding: 0 !important; 

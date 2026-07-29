@@ -111,6 +111,7 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         .total-label { text-align: right; font-weight: bold; }
         a[href]::after { content: none !important; }
         a { color: inherit !important; text-decoration: none !important; }
+        tr.signature-row { page-break-inside: avoid; page-break-before: avoid; }
     </style>
 </head>
 <body>
@@ -193,7 +194,7 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
             <tr>
                 <td colspan="12" style="border:none; height:24px;"></td>
             </tr>
-            <tr>
+            <tr class="signature-row">
                 <?php
                 $data_ttd = [
                     'Direktur' => 'Joule Rizal',
