@@ -344,6 +344,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     </style>
 </head>
 <body>
+    <div class="page-shell">
+        <?php include 'sidebar.php'; ?>
+        <div class="main-content" id="mainContent">
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-3 no-print">
             <h2 class="mb-0">Rekap Nota</h2>
@@ -550,6 +553,8 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         </div>
         </div>
     </div>
-    <?php include 'sidebar-script.php'; ?>
+            </div> <!-- /#mainContent -->
+        </div> <!-- /.page-shell -->
+        <?php include 'sidebar-script.php'; ?>
 </body>
 </html>
