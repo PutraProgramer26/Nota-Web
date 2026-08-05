@@ -149,8 +149,8 @@ echo "\xEF\xBB\xBF";
     <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Project</th>
+                <th style="text-align:center;">No</th>
+                <th style="text-align:center;">Project</th>
                 <th>Jumlah Total Harga</th>
             </tr>
         </thead>
@@ -162,8 +162,8 @@ echo "\xEF\xBB\xBF";
             <?php else : ?>
                 <?php $no = 1; foreach ($summaryRows as $summary) : ?>
                     <tr>
-                        <td><?php echo $no++; ?></td>
-                        <td><?php echo htmlspecialchars($summary['project']); ?></td>
+                        <td style="text-align:center;"><?php echo $no++; ?></td>
+                        <td style="text-align:center;"><?php echo htmlspecialchars($summary['project']); ?></td>
                         <td class="number-cell">Rp <?php echo number_format($summary['grand_total'], 0, ',', '.'); ?></td>
                     </tr>
                 <?php endforeach; ?>

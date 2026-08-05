@@ -152,6 +152,10 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
             text-align: center;
             font-weight: bold;
         }
+        .summary-print-table td.center-cell,
+        .summary-print-table th.center-cell {
+            text-align: center;
+        }
         .summary-print-table th:nth-child(1) {
             width: 10%;
         }
@@ -494,7 +498,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             <?php $no = 1; foreach ($summaryRows as $summary) : ?>
                                 <tr>
                                     <td class="center-cell"><?php echo $no++; ?></td>
-                                    <td><?php echo htmlspecialchars($summary['project']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars($summary['project']); ?></td>
                                     <td class="number-cell">Rp <?php echo number_format($summary['grand_total'], 0, ',', '.'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
