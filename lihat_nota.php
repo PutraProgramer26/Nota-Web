@@ -99,6 +99,18 @@ if ($searchTermLower !== '') {
 
     $rows = $filteredRows;
 }
+
+$currentPage = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 15;
+$totalRows = count($rows);
+$totalPages = max(1, (int)ceil($totalRows / $perPage));
+
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+}
+
+$rows = array_slice($rows, ($currentPage - 1) * $perPage, $perPage);
+$paginationQuery = http_build_query(['search' => $searchTerm]);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -299,6 +311,27 @@ if ($searchTermLower !== '') {
                         <?php endif; ?>
                     </tbody>
                 </table>
+
+                <?php if ($totalRows > $perPage): ?>
+                    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                        <div class="text-muted small">Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?></div>
+                        <nav aria-label="Pagination lihat nota">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="lihat_nota.php?<?php echo $paginationQuery; ?>&page=<?php echo max(1, $currentPage - 1); ?>">Sebelumnya</a>
+                                </li>
+                                <?php for ($pageNumber = 1; $pageNumber <= $totalPages; $pageNumber++): ?>
+                                    <li class="page-item <?php echo $pageNumber === $currentPage ? 'active' : ''; ?>">
+                                        <a class="page-link" href="lihat_nota.php?<?php echo $paginationQuery; ?>&page=<?php echo $pageNumber; ?>"><?php echo $pageNumber; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="lihat_nota.php?<?php echo $paginationQuery; ?>&page=<?php echo min($totalPages, $currentPage + 1); ?>">Berikutnya</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                <?php endif; ?>
                     </div>
                 </div>
             </div>

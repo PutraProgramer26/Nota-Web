@@ -77,8 +77,19 @@ if (tableExists($conn, $notaTable)) {
         ];
     }
 
-    // Convert to indexed array and limit to 50 notes (not items)
-    $historyLog = array_slice(array_values($notaSummaries), 0, 50);
+    // Convert to indexed array for dashboard history pagination
+    $historyLog = array_values($notaSummaries);
+
+    $currentPage = max(1, (int)($_GET['page'] ?? 1));
+    $perPage = 10;
+    $totalHistoryRecords = count($historyLog);
+    $totalPages = max(1, (int)ceil($totalHistoryRecords / $perPage));
+
+    if ($currentPage > $totalPages) {
+        $currentPage = $totalPages;
+    }
+
+    $historyLog = array_slice($historyLog, ($currentPage - 1) * $perPage, $perPage);
 }
 ?>
 <!DOCTYPE html>
@@ -307,6 +318,27 @@ if (tableExists($conn, $notaTable)) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+
+                <?php if (isset($totalHistoryRecords) && $totalHistoryRecords > $perPage): ?>
+                    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                        <div class="text-muted small">Halaman <?php echo $currentPage; ?> dari <?php echo $totalPages; ?></div>
+                        <nav aria-label="Pagination history log">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="index.php?page=<?php echo max(1, $currentPage - 1); ?>">Sebelumnya</a>
+                                </li>
+                                <?php for ($pageNumber = 1; $pageNumber <= $totalPages; $pageNumber++): ?>
+                                    <li class="page-item <?php echo $pageNumber === $currentPage ? 'active' : ''; ?>">
+                                        <a class="page-link" href="index.php?page=<?php echo $pageNumber; ?>"><?php echo $pageNumber; ?></a>
+                                    </li>
+                                <?php endfor; ?>
+                                <li class="page-item <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>">
+                                    <a class="page-link" href="index.php?page=<?php echo min($totalPages, $currentPage + 1); ?>">Berikutnya</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
         </div>
