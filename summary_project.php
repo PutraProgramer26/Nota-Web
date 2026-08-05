@@ -157,6 +157,59 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
             font-weight: bold;
             background: #f8f9fa;
         }
+        .project-dropdown {
+            position: relative;
+        }
+        .project-dropdown-toggle {
+            width: 100%;
+            text-align: left;
+            background: white;
+            color: #1f2937;
+            border: 1px solid #dbe3ef;
+            border-radius: 10px;
+            padding: 0.625rem 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .project-dropdown-toggle .caret {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .project-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            z-index: 20;
+            background: white;
+            border: 1px solid #dbe3ef;
+            border-radius: 10px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+            padding: 8px;
+            display: none;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+        .project-dropdown.open .project-dropdown-menu {
+            display: block;
+        }
+        .project-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.92rem;
+        }
+        .project-dropdown-item:hover {
+            background: #f3f4f6;
+        }
+        .project-dropdown-item input {
+            margin: 0;
+        }
         .signature-wrapper {
             display: none !important;
         }
@@ -292,13 +345,20 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Pilih Project</label>
-                                <select name="project[]" class="form-select" multiple size="6">
-                                    <?php while ($projectRow = mysqli_fetch_assoc($projectList)) : ?>
-                                        <option value="<?php echo htmlspecialchars($projectRow['project']); ?>" <?php echo in_array($projectRow['project'], $selectedProjects, true) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($projectRow['project']); ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
+                                <div class="project-dropdown" id="projectDropdown">
+                                    <button type="button" class="project-dropdown-toggle" id="projectDropdownToggle">
+                                        <span id="projectDropdownText"><?php echo htmlspecialchars(!empty($selectedProjects) ? 'Project Dipilih (' . count($selectedProjects) . ')' : 'Semua Project'); ?></span>
+                                        <span class="caret">▾</span>
+                                    </button>
+                                    <div class="project-dropdown-menu" id="projectDropdownMenu">
+                                        <?php while ($projectRow = mysqli_fetch_assoc($projectList)) : ?>
+                                            <label class="project-dropdown-item">
+                                                <input type="checkbox" name="project[]" value="<?php echo htmlspecialchars($projectRow['project']); ?>" <?php echo in_array($projectRow['project'], $selectedProjects, true) ? 'checked' : ''; ?>>
+                                                <span><?php echo htmlspecialchars($projectRow['project']); ?></span>
+                                            </label>
+                                        <?php endwhile; ?>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Pilih Toko / Vendor</label>
@@ -462,5 +522,48 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
         </div>
     </div>
     <?php include 'sidebar-script.php'; ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdown = document.getElementById('projectDropdown');
+            const toggle = document.getElementById('projectDropdownToggle');
+            const menu = document.getElementById('projectDropdownMenu');
+            const text = document.getElementById('projectDropdownText');
+            const checkboxes = menu.querySelectorAll('input[name="project[]"]');
+
+            if (!dropdown || !toggle || !menu || !text || checkboxes.length === 0) {
+                return;
+            }
+
+            const updateLabel = function () {
+                const selected = Array.from(checkboxes)
+                    .filter((checkbox) => checkbox.checked)
+                    .map((checkbox) => checkbox.parentElement.textContent.trim());
+
+                if (selected.length > 0) {
+                    text.textContent = selected.length === 1
+                        ? selected[0]
+                        : 'Project Dipilih (' + selected.length + ')';
+                } else {
+                    text.textContent = 'Semua Project';
+                }
+            };
+
+            toggle.addEventListener('click', function () {
+                dropdown.classList.toggle('open');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', updateLabel);
+            });
+
+            updateLabel();
+        });
+    </script>
 </body>
 </html>
