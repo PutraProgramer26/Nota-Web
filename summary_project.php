@@ -123,6 +123,34 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
         .number-cell { text-align: right; white-space: nowrap; }
         .print-only { display: none; }
         .btn-print { background: #0d6efd; color: white; }
+        .summary-print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 9pt;
+        }
+        .summary-print-table th,
+        .summary-print-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: left;
+        }
+        .summary-print-table th {
+            background: #f1f1f1;
+            text-align: center;
+            font-weight: bold;
+        }
+        .summary-print-table td.number-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .summary-print-table tr.total-row td {
+            font-weight: bold;
+            background: #f8f9fa;
+        }
+        .signature-wrapper {
+            display: none !important;
+        }
         @media print {
             html, body {
                 margin: 0;
@@ -149,6 +177,9 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                 width: 100% !important;
                 margin-left: 0 !important;
                 max-width: 100% !important;
+            }
+            .summary-output-card {
+                display: none !important;
             }
             .report-header {
                 text-align: center;
@@ -182,8 +213,25 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
             .report-info-value {
                 width: 60%;
             }
-            .table {
+            .summary-print-table {
                 font-size: 8.5pt;
+            }
+            .signature-wrapper {
+                display: flex !important;
+                justify-content: space-between;
+                margin-top: 40px;
+                width: 100%;
+                text-align: center;
+                flex-wrap: wrap;
+                page-break-inside: avoid;
+            }
+            .signature-box {
+                flex: 1;
+                min-width: 100px;
+                padding: 10px;
+            }
+            .signature-space {
+                height: 70px;
             }
             .card {
                 box-shadow: none !important;
@@ -316,7 +364,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                     </div>
                 </div>
 
-                <div class="card shadow-sm summary-card">
+                <div class="card shadow-sm summary-card summary-output-card">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered align-middle table-hover">
@@ -354,6 +402,52 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <div class="print-only">
+                    <table class="summary-print-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">No</th>
+                                <th style="width: 44%;">Project</th>
+                                <th style="width: 44%;">Jumlah Total Harga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; foreach ($summaryRows as $summary) : ?>
+                                <tr>
+                                    <td class="center-cell"><?php echo $no++; ?></td>
+                                    <td><?php echo htmlspecialchars($summary['project']); ?></td>
+                                    <td class="number-cell">Rp <?php echo number_format($summary['grand_total'], 0, ',', '.'); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <tr class="total-row">
+                                <td colspan="2" style="text-align: right;">GRAND TOTAL</td>
+                                <td class="number-cell">Rp <?php echo number_format($grandTotal, 0, ',', '.'); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="signature-wrapper">
+                        <?php
+                        $data_ttd = [
+                            'Direktur' => 'Joule Rizal',
+                            'Direktris' => 'Pravita F. Anggreini',
+                            'Project Manager' => '....................',
+                            'Manager Material' => '....................',
+                            'Material' => '....................'
+                        ];
+
+                        foreach ($data_ttd as $jabatan => $nama) {
+                            echo '
+                            <div class="signature-box">
+                                <div><strong>' . $jabatan . '</strong></div>
+                                <div class="signature-space"></div>
+                                <div>(' . $nama . ')</div>
+                            </div>';
+                        }
+                        ?>
                     </div>
                 </div>
             </div>

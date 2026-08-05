@@ -142,39 +142,51 @@ echo "\xEF\xBB\xBF";
             <tr>
                 <th>No</th>
                 <th>Project</th>
-                <th>Toko / Vendor</th>
-                <th>Jumlah Nota</th>
-                <th>Jumlah Item</th>
                 <th>Jumlah Total Harga</th>
-                <th>Tanggal Awal</th>
-                <th>Tanggal Akhir</th>
             </tr>
         </thead>
         <tbody>
             <?php if (empty($summaryRows)) : ?>
                 <tr>
-                    <td colspan="8" style="text-align:center;">Tidak ada data summary invoice untuk kombinasi yang dipilih.</td>
+                    <td colspan="3" style="text-align:center;">Tidak ada data summary invoice untuk kombinasi yang dipilih.</td>
                 </tr>
             <?php else : ?>
                 <?php $no = 1; foreach ($summaryRows as $summary) : ?>
                     <tr>
                         <td><?php echo $no++; ?></td>
                         <td><?php echo htmlspecialchars($summary['project']); ?></td>
-                        <td><?php echo htmlspecialchars($summary['nama_toko']); ?></td>
-                        <td><?php echo number_format($summary['nota_count']); ?></td>
-                        <td><?php echo number_format($summary['item_count']); ?></td>
                         <td class="number-cell">Rp <?php echo number_format($summary['grand_total'], 0, ',', '.'); ?></td>
-                        <td><?php echo htmlspecialchars($summary['tanggal_awal'] ?: '-'); ?></td>
-                        <td><?php echo htmlspecialchars($summary['tanggal_akhir'] ?: '-'); ?></td>
                     </tr>
                 <?php endforeach; ?>
                 <tr>
-                    <td colspan="5" class="label-cell" style="text-align:right;">TOTAL</td>
+                    <td colspan="2" class="label-cell" style="text-align:right;">GRAND TOTAL</td>
                     <td class="number-cell">Rp <?php echo number_format($grandTotal, 0, ',', '.'); ?></td>
-                    <td colspan="2"></td>
                 </tr>
             <?php endif; ?>
         </tbody>
+    </table>
+
+    <table style="margin-top: 28px;">
+        <tr>
+            <?php
+            $data_ttd = [
+                'Direktur' => 'Joule Rizal',
+                'Direktris' => 'Pravita F. Anggreini',
+                'Project Manager' => '....................',
+                'Manager Material' => '....................',
+                'Material' => '....................'
+            ];
+            $ttdKeys = array_keys($data_ttd);
+            foreach ($ttdKeys as $index => $jabatan) :
+                $colspan = $index === count($ttdKeys) - 1 ? 2 : 1;
+            ?>
+                <td colspan="<?php echo $colspan; ?>" style="text-align:center; border:none; vertical-align:top;">
+                    <div style="font-weight:bold; margin-bottom: 36px;"><?php echo htmlspecialchars($jabatan); ?></div>
+                    <div style="height: 60px;"></div>
+                    <div>(<?php echo htmlspecialchars($data_ttd[$jabatan]); ?>)</div>
+                </td>
+            <?php endforeach; ?>
+        </tr>
     </table>
 </body>
 </html>
