@@ -415,10 +415,6 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             <span class="report-info-label">Periode</span>
                             <span class="report-info-value">: <?php echo htmlspecialchars($selectedBulan !== '' ? $selectedBulan : 'Semua Bulan'); ?></span>
                         </div>
-                        <div class="report-info-item">
-                            <span class="report-info-label">Project</span>
-                            <span class="report-info-value">: <?php echo htmlspecialchars(!empty($selectedProjects) ? implode(', ', $selectedProjects) : 'Semua Project'); ?></span>
-                        </div>
                     </div>
                     <div>
                         <div class="report-info-item">
