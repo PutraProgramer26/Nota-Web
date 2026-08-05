@@ -133,6 +133,18 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 font-size: 10pt;
                 line-height: 1.4;
             }
+            .page-shell {
+                display: block !important;
+            }
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                max-width: 100% !important;
+            }
             a[href]::after {
                 content: none !important;
             }
