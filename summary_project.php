@@ -7,7 +7,13 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
-$selectedProject = trim((string)($_GET['project'] ?? ''));
+$selectedProjectRaw = $_GET['project'] ?? [];
+if (!is_array($selectedProjectRaw)) {
+    $selectedProjectRaw = [$selectedProjectRaw];
+}
+$selectedProjects = array_values(array_filter(array_map('trim', $selectedProjectRaw), function ($value) {
+    return $value !== '';
+}));
 $selectedToko = trim((string)($_GET['toko'] ?? ''));
 $selectedBulan = trim((string)($_GET['bulan'] ?? ''));
 $selectedKategori = 'invoice';
@@ -17,10 +23,13 @@ $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan
 $params = [$selectedKategori];
 $types = 's';
 
-if ($selectedProject !== '') {
-    $sql .= " AND project = ?";
-    $params[] = $selectedProject;
-    $types .= 's';
+if (!empty($selectedProjects)) {
+    $projectPlaceholders = implode(', ', array_fill(0, count($selectedProjects), '?'));
+    $sql .= " AND project IN ($projectPlaceholders)";
+    foreach ($selectedProjects as $projectValue) {
+        $params[] = $projectValue;
+        $types .= 's';
+    }
 }
 
 if ($selectedToko !== '') {
@@ -283,10 +292,9 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Pilih Project</label>
-                                <select name="project" class="form-select">
-                                    <option value="">Semua Project</option>
+                                <select name="project[]" class="form-select" multiple size="6">
                                     <?php while ($projectRow = mysqli_fetch_assoc($projectList)) : ?>
-                                        <option value="<?php echo htmlspecialchars($projectRow['project']); ?>" <?php echo $selectedProject === $projectRow['project'] ? 'selected' : ''; ?>>
+                                        <option value="<?php echo htmlspecialchars($projectRow['project']); ?>" <?php echo in_array($projectRow['project'], $selectedProjects, true) ? 'selected' : ''; ?>>
                                             <?php echo htmlspecialchars($projectRow['project']); ?>
                                         </option>
                                     <?php endwhile; ?>
@@ -326,7 +334,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                     <div class="col-md-4">
                         <div class="stat-box p-3 h-100">
                             <div class="text-muted small">Project Dipilih</div>
-                            <div class="fw-bold fs-5"><?php echo htmlspecialchars($selectedProject !== '' ? $selectedProject : 'Semua'); ?></div>
+                            <div class="fw-bold fs-5"><?php echo htmlspecialchars(!empty($selectedProjects) ? implode(', ', $selectedProjects) : 'Semua'); ?></div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -349,7 +357,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                         </div>
                         <div class="report-info-item">
                             <span class="report-info-label">Project</span>
-                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject !== '' ? $selectedProject : 'Semua Project'); ?></span>
+                            <span class="report-info-value">: <?php echo htmlspecialchars(!empty($selectedProjects) ? implode(', ', $selectedProjects) : 'Semua Project'); ?></span>
                         </div>
                     </div>
                     <div>
