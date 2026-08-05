@@ -216,7 +216,7 @@ a { text-decoration: none; }
   padding: 22px;
   transition: margin-left 0.25s ease;
 }
-.main-content.collapsed { margin-left: 76px; }
+.main-content.collapsed { margin-left: 84px; }
 
 .card {
   border: 1px solid var(--border);

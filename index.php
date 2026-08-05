@@ -1,4 +1,4 @@
-a<?php
+<?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -313,15 +313,8 @@ if (tableExists($conn, $notaTable)) {
     </div>
     </div>
 
+    <?php include 'sidebar-script.php'; ?>
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-
-        toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('collapsed');
-        });
         const notaPerProjectData = {
             labels: <?php echo json_encode(array_column($notaPerProject, 'label')); ?>,
             datasets: [{
