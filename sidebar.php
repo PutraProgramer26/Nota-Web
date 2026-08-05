@@ -35,6 +35,7 @@ function sidebarLink($page, $icon, $label) {
         <?php echo sidebarLink('input.php', '✎', 'Input Nota'); ?>
         <?php echo sidebarLink('lihat_nota.php', '▤', 'Lihat Nota'); ?>
         <?php echo sidebarLink('rekap_nota.php', '◫', 'Rekap Nota'); ?>
+        <?php echo sidebarLink('summary_project.php', '☰', 'Summary'); ?>
         <?php echo sidebarLink('pengaturan_project.php', '⚙', 'Pengaturan Project'); ?>
         <?php if ($userRole === 'superadmin'): ?>
             <?php echo sidebarLink('manajement_user.php', '👤', 'Manajement User'); ?>
