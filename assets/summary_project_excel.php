@@ -115,34 +115,38 @@ echo "\xEF\xBB\xBF";
     <style>
         @page { size: A4 portrait; margin: 10mm; }
         table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; table-layout: auto; }
-        th, td { border: 1px solid #000; padding: 5px; }
+        th, td { border: 1px solid #000; padding: 5px; vertical-align: top; }
         th { background: #f1f1f1; }
         .number-cell { text-align: right; white-space: nowrap; }
         .label-cell { font-weight: bold; }
+        .info-table td { border: 1px solid #000; }
+        .info-table td:first-child { width: 22%; }
+        .info-table td:last-child { width: 78%; }
     </style>
 </head>
 <body>
-    <table>
+    <table class="info-table" style="margin-bottom: 8px;">
         <tr>
-            <td colspan="8" style="font-weight:bold; font-size:12pt; text-align:center;">Summary Pembelian Material</td>
+            <td colspan="2" style="font-weight:bold; font-size:12pt; text-align:center;">Summary Pembelian Material</td>
         </tr>
         <tr>
             <td class="label-cell">Periode</td>
-            <td colspan="7"><?php echo htmlspecialchars($selectedBulan !== '' ? $selectedBulan : 'Semua Bulan'); ?></td>
+            <td><?php echo htmlspecialchars($selectedBulan !== '' ? $selectedBulan : 'Semua Bulan'); ?></td>
         </tr>
         <tr>
             <td class="label-cell">Toko</td>
-            <td colspan="7"><?php echo htmlspecialchars($selectedToko !== '' ? $selectedToko : 'Semua Toko'); ?></td>
+            <td><?php echo htmlspecialchars($selectedToko !== '' ? $selectedToko : 'Semua Toko'); ?></td>
         </tr>
         <tr>
             <td class="label-cell">Kategori</td>
-            <td colspan="7">Invoice</td>
+            <td>Invoice</td>
         </tr>
         <tr>
             <td class="label-cell">Tanggal Export</td>
-            <td colspan="7"><?php echo date('d F Y'); ?></td>
+            <td><?php echo date('d F Y'); ?></td>
         </tr>
-        <tr><td colspan="8" style="height:8px; border:none;"></td></tr>
+    </table>
+    <table>
         <thead>
             <tr>
                 <th>No</th>

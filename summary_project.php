@@ -137,17 +137,29 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
             border-collapse: collapse;
             margin-top: 10px;
             font-size: 9pt;
+            table-layout: auto;
         }
         .summary-print-table th,
         .summary-print-table td {
             border: 1px solid #000;
             padding: 5px;
             text-align: left;
+            vertical-align: top;
+            word-break: break-word;
         }
         .summary-print-table th {
             background: #f1f1f1;
             text-align: center;
             font-weight: bold;
+        }
+        .summary-print-table th:nth-child(1) {
+            width: 10%;
+        }
+        .summary-print-table th:nth-child(2) {
+            width: auto;
+        }
+        .summary-print-table th:nth-child(3) {
+            width: 30%;
         }
         .summary-print-table td.number-cell {
             text-align: right;
@@ -473,9 +485,9 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                     <table class="summary-print-table">
                         <thead>
                             <tr>
-                                <th style="width: 12%;">No</th>
-                                <th style="width: 44%;">Project</th>
-                                <th style="width: 44%;">Jumlah Total Harga</th>
+                                <th>No</th>
+                                <th>Project</th>
+                                <th>Jumlah Total Harga</th>
                             </tr>
                         </thead>
                         <tbody>
