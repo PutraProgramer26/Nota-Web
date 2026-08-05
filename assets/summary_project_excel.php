@@ -63,6 +63,8 @@ foreach ($rows as $row) {
     $registerKey = trim((string)($row['no_register'] ?? ''));
     $tanggalBelanja = trim((string)($row['tanggal_belanja'] ?? ''));
     $groupKey = $projectName . '|' . $tokoName;
+    $rowTotalHarga = (float)($row['total_harga'] ?? 0);
+    $rowTotalHargaWithPpn = $tokoName === 'Cahaya Timika' ? $rowTotalHarga * 1.11 : $rowTotalHarga;
 
     if ($groupKey === '|') {
         continue;
@@ -87,8 +89,8 @@ foreach ($rows as $row) {
     }
 
     $summaryRows[$groupKey]['item_count'] += 1;
-    $summaryRows[$groupKey]['grand_total'] += (float)($row['total_harga'] ?? 0);
-    $grandTotal += (float)($row['total_harga'] ?? 0);
+    $summaryRows[$groupKey]['grand_total'] += $rowTotalHargaWithPpn;
+    $grandTotal += $rowTotalHargaWithPpn;
 
     if ($tanggalBelanja !== '') {
         if ($summaryRows[$groupKey]['tanggal_awal'] === '' || $tanggalBelanja < $summaryRows[$groupKey]['tanggal_awal']) {
