@@ -50,6 +50,10 @@ while ($setting = mysqli_fetch_assoc($settingsResult)) {
     ];
 }
 
+$validProjectNames = array_values(array_filter(array_map(function ($setting) {
+    return trim((string)($setting['nama_project'] ?? ''));
+}, $projectSettings)));
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $no_register = trim($_POST['no_register'] ?? '');
     $tanggal_belanja = trim($_POST['tanggal_belanja'] ?? '');
@@ -65,7 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $inserted = false;
 
-    if ($no_register !== '' && $tanggal_belanja !== '' && $nama_toko !== '' && $project !== '' && $pemesan !== '' && !empty($barang_names)) {
+    $projectIsValid = in_array($project, $validProjectNames, true);
+
+    if ($no_register !== '' && $tanggal_belanja !== '' && $nama_toko !== '' && $project !== '' && $pemesan !== '' && $projectIsValid && !empty($barang_names)) {
         foreach ($barang_names as $index => $nama_barang) {
             $nama_barang = trim($nama_barang);
             $qty = normalizeDecimalValue($qtys[$index] ?? 0);
@@ -98,6 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($inserted) {
         $message = 'Data nota berhasil disimpan.';
+    } elseif ($project !== '' && !$projectIsValid) {
+        $message = 'Project tidak tersedia. Pilih project yang sudah ditambahkan di pengaturan project.';
     } else {
         $message = 'Gagal menyimpan data. Pastikan semua field wajib diisi.';
     }
@@ -156,7 +164,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nama Project</label>
-                            <input type="text" name="project" id="project" class="form-control" required />
+                            <select name="project" id="project" class="form-select" required>
+                                <?php if (empty($projectSettings)) : ?>
+                                    <option value="">Belum ada project tersedia</option>
+                                <?php else : ?>
+                                    <option value="">-- Pilih Project --</option>
+                                    <?php foreach ($projectSettings as $setting) : ?>
+                                        <option value="<?php echo htmlspecialchars($setting['nama_project'] ?? ''); ?>">
+                                            <?php echo htmlspecialchars($setting['nama_project'] ?? ''); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <div class="form-text text-danger" id="projectWarning" style="display: none;">
+                                Project tidak tersedia. Silakan tambahkan project di Pengaturan Project terlebih dahulu.
+                            </div>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Nama Pemesan / Requestor</label>
@@ -211,12 +233,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         const projectInput = document.getElementById('project');
+        const projectWarning = document.getElementById('projectWarning');
         const noRegisterInput = document.getElementById('no_register');
         const projectSettings = <?php echo json_encode($projectSettings, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 
         function getProjectSetting(projectName) {
             const normalized = (projectName || '').trim().toLowerCase();
             return projectSettings.find(setting => (setting.nama_project || '').trim().toLowerCase() === normalized) || null;
+        }
+
+        function updateProjectWarning() {
+            const project = (projectInput.value || '').trim();
+            const hasSettings = projectSettings.length > 0;
+            const setting = getProjectSetting(project);
+
+            if (!hasSettings) {
+                projectWarning.style.display = 'block';
+                projectWarning.textContent = 'Project tidak tersedia. Silakan tambahkan project di Pengaturan Project terlebih dahulu.';
+                return;
+            }
+
+            if (!setting) {
+                projectWarning.style.display = 'block';
+                projectWarning.textContent = 'Project tidak tersedia. Pilih project yang sudah ditambahkan di Pengaturan Project.';
+            } else {
+                projectWarning.style.display = 'none';
+            }
         }
 
         function generateNoRegister() {
@@ -243,7 +285,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             noRegisterInput.value = `${initials}${String(counter).padStart(3, '0')}`;
         }
 
-        projectInput.addEventListener('input', generateNoRegister);
+        projectInput.addEventListener('change', function () {
+            updateProjectWarning();
+            generateNoRegister();
+        });
+        projectInput.addEventListener('input', function () {
+            updateProjectWarning();
+            generateNoRegister();
+        });
 
         function addBarangRow() {
             const tableBody = document.querySelector('#barangTable tbody');
@@ -324,6 +373,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const rows = document.querySelectorAll('#barangTable tbody tr');
             let hasValidRow = false;
 
+            if (!projectInput.value) {
+                alert('Project tidak tersedia. Pilih project yang sudah ditambahkan di Pengaturan Project.');
+                projectInput.focus();
+                return false;
+            }
+
             for (let row of rows) {
                 const namaBarang = row.querySelector('input[name="nama_barang[]"]').value.trim();
                 const qty = row.querySelector('input[name="qty[]"]').value;
@@ -382,6 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }, 2000);
         }
 
+        updateProjectWarning();
         generateNoRegister();
         updateTotalBelanja();
     </script>
