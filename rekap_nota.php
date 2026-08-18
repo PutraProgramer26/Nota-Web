@@ -548,7 +548,6 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         "Direktur" => "Joule Rizal",
         "Direktris" => "Pravita F. Anggreini",
         "Project Manager" => "....................",
-        "Manager Material" => "....................",
         "Material" => "...................."
     ];
 

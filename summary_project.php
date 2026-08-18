@@ -517,7 +517,6 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             'Direktur' => 'Joule Rizal',
                             'Direktris' => 'Pravita F. Anggreini',
                             'Project Manager' => '....................',
-                            'Manager Material' => '....................',
                             'Material' => '....................'
                         ];
 

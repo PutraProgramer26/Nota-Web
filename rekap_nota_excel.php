@@ -200,7 +200,6 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                     'Direktur' => 'Joule Rizal',
                     'Direktris' => 'Pravita F. Anggreini',
                     'Project Manager' => '....................',
-                    'Manager Material' => '....................',
                     'Material' => '....................'
                 ];
                 $ttdKeys = array_keys($data_ttd);
