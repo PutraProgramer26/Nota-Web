@@ -198,7 +198,6 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <?php
                 $data_ttd = [
                     'Direktur' => 'Joule Rizal',
-                    'Direktris' => 'Pravita F. Anggreini',
                     'Project Manager' => '....................',
                     'Material' => '....................'
                 ];

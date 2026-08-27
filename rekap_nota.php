@@ -546,7 +546,6 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     <?php
     $data_ttd = [
         "Direktur" => "Joule Rizal",
-        "Direktris" => "Pravita F. Anggreini",
         "Project Manager" => "....................",
         "Material" => "...................."
     ];

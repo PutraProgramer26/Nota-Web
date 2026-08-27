@@ -518,7 +518,6 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                         <?php
                         $data_ttd = [
                             'Direktur' => 'Joule Rizal',
-                            'Direktris' => 'Pravita F. Anggreini',
                             'Project Manager' => '....................',
                             'Material' => '....................'
                         ];
