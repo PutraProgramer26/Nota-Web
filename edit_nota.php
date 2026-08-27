@@ -13,6 +13,21 @@ if (($_SESSION['role'] ?? 'user') !== 'superadmin') {
 
 include 'koneksi.php';
 
+function normalizeProjectName($projectName) {
+    $projectAliases = [
+        'mess karitas' => 'Rumah Karitas',
+        'rumah karitas' => 'Rumah Karitas',
+        'mess panjat tebing' => 'Petakan Panjat Tebing',
+        'petakan panjat tebing' => 'Petakan Panjat Tebing',
+        'mess waker' => 'Petakan Waker',
+        'petakan waker' => 'Petakan Waker',
+    ];
+
+    $normalizedName = trim($projectName);
+    $aliasKey = strtolower($normalizedName);
+    return $projectAliases[$aliasKey] ?? $normalizedName;
+}
+
 function normalizeDecimalValue($value) {
     $value = trim((string)($value ?? ''));
     if ($value === '') {
@@ -68,7 +83,7 @@ $notaData = $items[0];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal_belanja = trim($_POST['tanggal_belanja'] ?? '');
     $nama_toko = trim($_POST['nama_toko'] ?? '');
-    $project = trim($_POST['project'] ?? '');
+    $project = normalizeProjectName($_POST['project'] ?? '');
     $pemesan = trim($_POST['pemesan'] ?? '');
     
     $barang_names = $_POST['nama_barang'] ?? [];

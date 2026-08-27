@@ -7,6 +7,21 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+function normalizeProjectName($projectName) {
+    $projectAliases = [
+        'mess karitas' => 'Rumah Karitas',
+        'rumah karitas' => 'Rumah Karitas',
+        'mess panjat tebing' => 'Petakan Panjat Tebing',
+        'petakan panjat tebing' => 'Petakan Panjat Tebing',
+        'mess waker' => 'Petakan Waker',
+        'petakan waker' => 'Petakan Waker',
+    ];
+
+    $normalizedName = trim($projectName);
+    $aliasKey = strtolower($normalizedName);
+    return $projectAliases[$aliasKey] ?? $normalizedName;
+}
+
 function normalizeDecimalValue($value) {
     $value = trim((string)($value ?? ''));
     if ($value === '') {
@@ -51,14 +66,14 @@ while ($setting = mysqli_fetch_assoc($settingsResult)) {
 }
 
 $validProjectNames = array_values(array_filter(array_map(function ($setting) {
-    return trim((string)($setting['nama_project'] ?? ''));
+    return normalizeProjectName($setting['nama_project'] ?? '');
 }, $projectSettings)));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $no_register = trim($_POST['no_register'] ?? '');
     $tanggal_belanja = trim($_POST['tanggal_belanja'] ?? '');
     $nama_toko = trim($_POST['nama_toko'] ?? '');
-    $project = trim($_POST['project'] ?? '');
+    $project = normalizeProjectName($_POST['project'] ?? '');
     $pemesan = trim($_POST['pemesan'] ?? '');
 
     $barang_names = $_POST['nama_barang'] ?? [];
