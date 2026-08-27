@@ -7,13 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
-$selectedProjectRaw = $_GET['project'] ?? [];
-if (!is_array($selectedProjectRaw)) {
-    $selectedProjectRaw = [$selectedProjectRaw];
+$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
+$projectCategories = ['Mixer', 'Internal', 'Project'];
+if (!in_array($selectedProjectCategory, $projectCategories, true)) {
+    $selectedProjectCategory = 'Project';
 }
-$selectedProjects = array_values(array_filter(array_map('trim', $selectedProjectRaw), function ($value) {
-    return $value !== '';
-}));
 $selectedToko = trim((string)($_GET['toko'] ?? ''));
 $selectedBulan = trim((string)($_GET['bulan'] ?? ''));
 $selectedKategori = 'invoice';
@@ -23,10 +21,21 @@ $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan
 $params = [$selectedKategori];
 $types = 's';
 
-if (!empty($selectedProjects)) {
-    $projectPlaceholders = implode(', ', array_fill(0, count($selectedProjects), '?'));
-    $sql .= " AND project IN ($projectPlaceholders)";
-    foreach ($selectedProjects as $projectValue) {
+if ($selectedProjectCategory === 'Mixer') {
+    $sql .= " AND LOWER(project) = LOWER(?)";
+    $params[] = 'Mixer';
+    $types .= 's';
+} elseif ($selectedProjectCategory === 'Internal') {
+    $internalProjects = ['Mess Karitas', 'Mess Panjat tebing', 'Mess waker', 'Workshop SP2'];
+    $sql .= " AND LOWER(project) IN (LOWER(?), LOWER(?), LOWER(?), LOWER(?))";
+    foreach ($internalProjects as $projectValue) {
+        $params[] = $projectValue;
+        $types .= 's';
+    }
+} elseif ($selectedProjectCategory === 'Project') {
+    $excludedProjects = ['Mixer', 'Mess Karitas', 'Mess waker', 'Mess panjat tebing', 'Workshop Sp2'];
+    $sql .= " AND LOWER(project) NOT IN (LOWER(?), LOWER(?), LOWER(?), LOWER(?), LOWER(?))";
+    foreach ($excludedProjects as $projectValue) {
         $params[] = $projectValue;
         $types .= 's';
     }
@@ -111,7 +120,6 @@ usort($summaryRows, function ($a, $b) {
     return strcmp($a['project'], $b['project']) ?: strcmp($a['nama_toko'], $b['nama_toko']);
 });
 
-$projectList = mysqli_query($conn, "SELECT DISTINCT project FROM nota WHERE keterangan = 'invoice' AND project IS NOT NULL AND project <> '' ORDER BY project ASC");
 $tokoList = mysqli_query($conn, "SELECT DISTINCT nama_toko FROM nota WHERE keterangan = 'invoice' AND nama_toko IS NOT NULL AND nama_toko <> '' ORDER BY nama_toko ASC");
 $bulanList = mysqli_query($conn, "SELECT DISTINCT DATE_FORMAT(tanggal_belanja, '%Y-%m') AS bulan FROM nota WHERE keterangan = 'invoice' AND tanggal_belanja IS NOT NULL ORDER BY bulan DESC");
 
@@ -363,20 +371,13 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Pilih Project</label>
-                                <div class="project-dropdown" id="projectDropdown">
-                                    <button type="button" class="project-dropdown-toggle" id="projectDropdownToggle">
-                                        <span id="projectDropdownText"><?php echo htmlspecialchars(!empty($selectedProjects) ? 'Project Dipilih (' . count($selectedProjects) . ')' : 'Semua Project'); ?></span>
-                                        <span class="caret">▾</span>
-                                    </button>
-                                    <div class="project-dropdown-menu" id="projectDropdownMenu">
-                                        <?php while ($projectRow = mysqli_fetch_assoc($projectList)) : ?>
-                                            <label class="project-dropdown-item">
-                                                <input type="checkbox" name="project[]" value="<?php echo htmlspecialchars($projectRow['project']); ?>" <?php echo in_array($projectRow['project'], $selectedProjects, true) ? 'checked' : ''; ?>>
-                                                <span><?php echo htmlspecialchars($projectRow['project']); ?></span>
-                                            </label>
-                                        <?php endwhile; ?>
-                                    </div>
-                                </div>
+                                <select name="project_category" class="form-select">
+                                    <?php foreach ($projectCategories as $projectCategory) : ?>
+                                        <option value="<?php echo htmlspecialchars($projectCategory); ?>" <?php echo $selectedProjectCategory === $projectCategory ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($projectCategory); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Pilih Toko / Vendor</label>
@@ -412,7 +413,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                     <div class="col-md-4">
                         <div class="stat-box p-3 h-100">
                             <div class="text-muted small">Project Dipilih</div>
-                            <div class="fw-bold fs-5"><?php echo htmlspecialchars(!empty($selectedProjects) ? implode(', ', $selectedProjects) : 'Semua'); ?></div>
+                            <div class="fw-bold fs-5"><?php echo htmlspecialchars($selectedProjectCategory !== '' ? $selectedProjectCategory : 'Semua'); ?></div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -535,48 +536,5 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
         </div>
     </div>
     <?php include 'sidebar-script.php'; ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const dropdown = document.getElementById('projectDropdown');
-            const toggle = document.getElementById('projectDropdownToggle');
-            const menu = document.getElementById('projectDropdownMenu');
-            const text = document.getElementById('projectDropdownText');
-            const checkboxes = menu.querySelectorAll('input[name="project[]"]');
-
-            if (!dropdown || !toggle || !menu || !text || checkboxes.length === 0) {
-                return;
-            }
-
-            const updateLabel = function () {
-                const selected = Array.from(checkboxes)
-                    .filter((checkbox) => checkbox.checked)
-                    .map((checkbox) => checkbox.parentElement.textContent.trim());
-
-                if (selected.length > 0) {
-                    text.textContent = selected.length === 1
-                        ? selected[0]
-                        : 'Project Dipilih (' + selected.length + ')';
-                } else {
-                    text.textContent = 'Semua Project';
-                }
-            };
-
-            toggle.addEventListener('click', function () {
-                dropdown.classList.toggle('open');
-            });
-
-            document.addEventListener('click', function (event) {
-                if (!dropdown.contains(event.target)) {
-                    dropdown.classList.remove('open');
-                }
-            });
-
-            checkboxes.forEach(function (checkbox) {
-                checkbox.addEventListener('change', updateLabel);
-            });
-
-            updateLabel();
-        });
-    </script>
 </body>
 </html>

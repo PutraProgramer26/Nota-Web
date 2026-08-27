@@ -7,13 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
-$selectedProjectRaw = $_GET['project'] ?? [];
-if (!is_array($selectedProjectRaw)) {
-    $selectedProjectRaw = [$selectedProjectRaw];
+$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
+$projectCategories = ['Mixer', 'Internal', 'Project'];
+if (!in_array($selectedProjectCategory, $projectCategories, true)) {
+    $selectedProjectCategory = 'Project';
 }
-$selectedProjects = array_values(array_filter(array_map('trim', $selectedProjectRaw), function ($value) {
-    return $value !== '';
-}));
 $selectedToko = trim((string)($_GET['toko'] ?? ''));
 $selectedBulan = trim((string)($_GET['bulan'] ?? ''));
 $selectedKategori = 'invoice';
@@ -23,10 +21,21 @@ $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan
 $params = [$selectedKategori];
 $types = 's';
 
-if (!empty($selectedProjects)) {
-    $projectPlaceholders = implode(', ', array_fill(0, count($selectedProjects), '?'));
-    $sql .= " AND project IN ($projectPlaceholders)";
-    foreach ($selectedProjects as $projectValue) {
+if ($selectedProjectCategory === 'Mixer') {
+    $sql .= " AND LOWER(project) = LOWER(?)";
+    $params[] = 'Mixer';
+    $types .= 's';
+} elseif ($selectedProjectCategory === 'Internal') {
+    $internalProjects = ['Mess Karitas', 'Mess Panjat tebing', 'Mess waker', 'Workshop SP2'];
+    $sql .= " AND LOWER(project) IN (LOWER(?), LOWER(?), LOWER(?), LOWER(?))";
+    foreach ($internalProjects as $projectValue) {
+        $params[] = $projectValue;
+        $types .= 's';
+    }
+} elseif ($selectedProjectCategory === 'Project') {
+    $excludedProjects = ['Mixer', 'Mess Karitas', 'Mess waker', 'Mess panjat tebing', 'Workshop Sp2'];
+    $sql .= " AND LOWER(project) NOT IN (LOWER(?), LOWER(?), LOWER(?), LOWER(?), LOWER(?))";
+    foreach ($excludedProjects as $projectValue) {
         $params[] = $projectValue;
         $types .= 's';
     }
