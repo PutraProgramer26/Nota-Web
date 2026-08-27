@@ -518,9 +518,15 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                         <?php
                         $data_ttd = [
                             'Direktur' => 'Joule Rizal',
-                            'Project Manager' => '....................',
                             'Material' => '....................'
                         ];
+                        if ($selectedProjectCategory !== 'Internal') {
+                            $data_ttd = [
+                                'Direktur' => 'Joule Rizal',
+                                'Project Manager' => '....................',
+                                'Material' => '....................'
+                            ];
+                        }
 
                         foreach ($data_ttd as $jabatan => $nama) {
                             echo '

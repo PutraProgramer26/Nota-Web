@@ -193,9 +193,15 @@ echo "\xEF\xBB\xBF";
             <?php
             $data_ttd = [
                 'Direktur' => 'Joule Rizal',
-                'Project Manager' => '....................',
                 'Material' => '....................'
             ];
+            if ($selectedProjectCategory !== 'Internal') {
+                $data_ttd = [
+                    'Direktur' => 'Joule Rizal',
+                    'Project Manager' => '....................',
+                    'Material' => '....................'
+                ];
+            }
             $ttdKeys = array_keys($data_ttd);
             foreach ($ttdKeys as $index => $jabatan) :
                 $colspan = $index === count($ttdKeys) - 1 ? 2 : 1;
