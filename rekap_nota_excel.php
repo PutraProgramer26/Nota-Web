@@ -8,11 +8,9 @@ if (!isset($_SESSION['user_id'])) {
 include 'koneksi.php';
 
 $selectedToko = $_GET['toko'] ?? '';
-$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
-$projectCategories = ['Mixer', 'Internal', 'Project'];
-if (!in_array($selectedProjectCategory, $projectCategories, true)) {
-    $selectedProjectCategory = 'Project';
-}
+$selectedProject = trim((string)($_GET['project'] ?? ''));
+$internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'workshop sp2'];
+$isInternalProject = in_array(strtolower($selectedProject), $internalProjectNames, true);
 $selectedBulan = $_GET['bulan'] ?? '';
 $selectedKeterangan = $_GET['keterangan'] ?? '';
 
@@ -29,26 +27,10 @@ if ($selectedToko !== '') {
     $params[] = $selectedToko;
     $types .= 's';
 }
-if ($selectedProjectCategory === 'Mixer') {
-    $sql .= " AND LOWER(project) = LOWER(?)";
-    $params[] = 'Mixer';
+if ($selectedProject !== '') {
+    $sql .= " AND project = ?";
+    $params[] = $selectedProject;
     $types .= 's';
-} elseif ($selectedProjectCategory === 'Internal') {
-    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
-    $projectPlaceholders = implode(', ', array_fill(0, count($internalProjects), '?'));
-    $sql .= " AND LOWER(project) IN ($projectPlaceholders)";
-    foreach ($internalProjects as $projectValue) {
-        $params[] = $projectValue;
-        $types .= 's';
-    }
-} elseif ($selectedProjectCategory === 'Project') {
-    $excludedProjects = ['Mixer', 'Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
-    $projectPlaceholders = implode(', ', array_fill(0, count($excludedProjects), '?'));
-    $sql .= " AND LOWER(project) NOT IN ($projectPlaceholders)";
-    foreach ($excludedProjects as $projectValue) {
-        $params[] = $projectValue;
-        $types .= 's';
-    }
 }
 if ($selectedBulan !== '') {
     $sql .= " AND DATE_FORMAT(tanggal_belanja, '%Y-%m') = ?";
@@ -153,7 +135,7 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
         </tr>
         <tr>
             <td><strong>Project</strong></td>
-            <td colspan="11"><?php echo htmlspecialchars($selectedProjectCategory); ?></td>
+            <td colspan="11"><?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></td>
         </tr>
         <tr><td colspan="12" style="height:8px; border:none;"></td></tr>
         <thead>
@@ -218,14 +200,11 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                 <?php
                 $data_ttd = [
                     'Direktur' => 'Joule Rizal',
+                    'Project Manager' => '....................',
                     'Material' => '....................'
                 ];
-                if ($selectedProjectCategory !== 'Internal') {
-                    $data_ttd = [
-                        'Direktur' => 'Joule Rizal',
-                        'Project Manager' => '....................',
-                        'Material' => '....................'
-                    ];
+                if ($isInternalProject) {
+                    unset($data_ttd['Project Manager']);
                 }
                 $ttdKeys = array_keys($data_ttd);
                 foreach ($ttdKeys as $index => $jabatan) :

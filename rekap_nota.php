@@ -8,11 +8,9 @@ if (!isset($_SESSION['user_id'])) {
 include 'koneksi.php';
 
 $selectedToko = $_GET['toko'] ?? '';
-$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
-$projectCategories = ['Mixer', 'Internal', 'Project'];
-if (!in_array($selectedProjectCategory, $projectCategories, true)) {
-    $selectedProjectCategory = 'Project';
-}
+$selectedProject = trim((string)($_GET['project'] ?? ''));
+$internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'workshop sp2'];
+$isInternalProject = in_array(strtolower($selectedProject), $internalProjectNames, true);
 $selectedBulan = $_GET['bulan'] ?? '';
 $selectedKeterangan = $_GET['keterangan'] ?? '';
 
@@ -26,26 +24,10 @@ if ($selectedToko !== '') {
     $params[] = $selectedToko;
     $types .= 's';
 }
-if ($selectedProjectCategory === 'Mixer') {
-    $sql .= " AND LOWER(project) = LOWER(?)";
-    $params[] = 'Mixer';
+if ($selectedProject !== '') {
+    $sql .= " AND project = ?";
+    $params[] = $selectedProject;
     $types .= 's';
-} elseif ($selectedProjectCategory === 'Internal') {
-    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
-    $projectPlaceholders = implode(', ', array_fill(0, count($internalProjects), '?'));
-    $sql .= " AND LOWER(project) IN ($projectPlaceholders)";
-    foreach ($internalProjects as $projectValue) {
-        $params[] = $projectValue;
-        $types .= 's';
-    }
-} elseif ($selectedProjectCategory === 'Project') {
-    $excludedProjects = ['Mixer', 'Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
-    $projectPlaceholders = implode(', ', array_fill(0, count($excludedProjects), '?'));
-    $sql .= " AND LOWER(project) NOT IN ($projectPlaceholders)";
-    foreach ($excludedProjects as $projectValue) {
-        $params[] = $projectValue;
-        $types .= 's';
-    }
 }
 if ($selectedBulan !== '') {
     $sql .= " AND DATE_FORMAT(tanggal_belanja, '%Y-%m') = ?";
@@ -112,6 +94,7 @@ if ($selectedToko === 'Cahaya Timika') {
 }
 
 $tokoList = mysqli_query($conn, "SELECT DISTINCT nama_toko FROM nota WHERE nama_toko IS NOT NULL AND nama_toko <> '' ORDER BY nama_toko");
+$projectList = mysqli_query($conn, "SELECT DISTINCT project FROM nota WHERE project IS NOT NULL AND project <> '' ORDER BY project");
 $bulanList = mysqli_query($conn, "SELECT DISTINCT DATE_FORMAT(tanggal_belanja, '%Y-%m') AS bulan FROM nota WHERE tanggal_belanja IS NOT NULL ORDER BY bulan DESC");
 $keteranganList = ['Cash', 'invoice', 'stock gudang'];
 
@@ -404,12 +387,13 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Nama Project</label>
-                        <select name="project_category" class="form-select">
-                            <?php foreach ($projectCategories as $projectCategory) : ?>
-                                <option value="<?php echo htmlspecialchars($projectCategory); ?>" <?php echo $selectedProjectCategory === $projectCategory ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($projectCategory); ?>
+                        <select name="project" class="form-select">
+                            <option value="">Semua Project</option>
+                            <?php while ($row = mysqli_fetch_assoc($projectList)) : ?>
+                                <option value="<?php echo htmlspecialchars($row['project']); ?>" <?php echo $selectedProject === $row['project'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($row['project']); ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php endwhile; ?>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -487,7 +471,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                         </div>
                         <div class="report-info-item" style="margin-top: 4px;">
                             <span class="report-info-label">Project</span>
-                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProjectCategory); ?></span>
+                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
                         </div>
                     </div>
                 </div>
@@ -566,14 +550,11 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     <?php
     $data_ttd = [
         "Direktur" => "Joule Rizal",
+        "Project Manager" => "....................",
         "Material" => "...................."
     ];
-    if ($selectedProjectCategory !== 'Internal') {
-        $data_ttd = [
-            "Direktur" => "Joule Rizal",
-            "Project Manager" => "....................",
-            "Material" => "...................."
-        ];
+    if ($isInternalProject) {
+        unset($data_ttd["Project Manager"]);
     }
 
     foreach ($data_ttd as $jabatan => $nama) {
