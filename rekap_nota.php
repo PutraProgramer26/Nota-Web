@@ -7,6 +7,10 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+function formatPrintProjectName($projectName) {
+    return strtolower(trim((string)$projectName)) === 'rumah karitas' ? 'Mess Karitas' : $projectName;
+}
+
 $selectedToko = $_GET['toko'] ?? '';
 $selectedProject = trim((string)($_GET['project'] ?? ''));
 $internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'workshop sp2'];
@@ -117,6 +121,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
         .table-responsive { overflow-x: auto; }
         .btn-print { background: #0d6efd; color: white; }
         .print-only { display: none; }
+        .print-project-name { display: none; }
         .signature-wrapper {
             display: none !important;
         }
@@ -159,6 +164,12 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             .print-only {
                 display: block !important;
+            }
+            .screen-project-name {
+                display: none;
+            }
+            .print-project-name {
+                display: inline;
             }
             .signature-wrapper {
                 display: flex !important;
@@ -471,7 +482,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                         </div>
                         <div class="report-info-item" style="margin-top: 4px;">
                             <span class="report-info-label">Project</span>
-                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject ?: 'Semua Project'); ?></span>
+                            <span class="report-info-value">: <?php echo htmlspecialchars($selectedProject !== '' ? formatPrintProjectName($selectedProject) : 'Semua Project'); ?></span>
                         </div>
                     </div>
                 </div>
@@ -506,7 +517,10 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                             <?php if ($index === 0) : ?>
                                                 <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['no_register'] ?: '-'); ?></td>
                                                 <td class="center-cell" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars(!empty($summary['tanggal_belanja']) ? date('d-M', strtotime($summary['tanggal_belanja'])) : '-'); ?></td>
-                                                <td class="project-column" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></td>
+                                                <td class="project-column" rowspan="<?php echo $rowspan; ?>">
+                                                    <span class="screen-project-name"><?php echo htmlspecialchars($summary['project'] ?: '-'); ?></span>
+                                                    <span class="print-project-name"><?php echo htmlspecialchars($summary['project'] !== '' ? formatPrintProjectName($summary['project']) : '-'); ?></span>
+                                                </td>
                                                 <td class="toko-column" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
                                             <?php endif; ?>
                                             <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>

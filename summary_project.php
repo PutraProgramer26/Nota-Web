@@ -7,6 +7,10 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+function formatPrintProjectName($projectName) {
+    return strtolower(trim((string)$projectName)) === 'rumah karitas' ? 'Mess Karitas' : $projectName;
+}
+
 $selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
 $projectCategories = ['Mixer', 'Internal', 'Project'];
 if (!in_array($selectedProjectCategory, $projectCategories, true)) {
@@ -503,7 +507,7 @@ $bulanIndonesia = ['01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' 
                             <?php $no = 1; foreach ($summaryRows as $summary) : ?>
                                 <tr>
                                     <td class="center-cell"><?php echo $no++; ?></td>
-                                    <td class="center-cell"><?php echo htmlspecialchars($summary['project']); ?></td>
+                                    <td class="center-cell"><?php echo htmlspecialchars(formatPrintProjectName($summary['project'])); ?></td>
                                     <td class="number-cell">Rp <?php echo number_format($summary['grand_total'], 0, ',', '.'); ?></td>
                                 </tr>
                             <?php endforeach; ?>
