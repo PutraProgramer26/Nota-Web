@@ -22,7 +22,7 @@ function formatPrintProjectName($projectName) {
 
 $selectedToko = $_GET['toko'] ?? '';
 $selectedProject = trim((string)($_GET['project'] ?? ''));
-$internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'workshop sp2'];
+$internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'alat berat', 'workshop sp2'];
 $isInternalProject = in_array(strtolower($selectedProject), $internalProjectNames, true);
 $selectedBulan = $_GET['bulan'] ?? '';
 $selectedKeterangan = $_GET['keterangan'] ?? '';

@@ -39,7 +39,7 @@ if ($selectedProjectCategory === 'Mixer') {
     $params[] = 'Mixer';
     $types .= 's';
 } elseif ($selectedProjectCategory === 'Internal') {
-    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
+    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Alat Berat', 'Workshop SP2'];
     $projectPlaceholders = implode(', ', array_fill(0, count($internalProjects), '?'));
     $sql .= " AND LOWER(project) IN ($projectPlaceholders)";
     foreach ($internalProjects as $projectValue) {
@@ -47,7 +47,7 @@ if ($selectedProjectCategory === 'Mixer') {
         $types .= 's';
     }
 } elseif ($selectedProjectCategory === 'Project') {
-    $excludedProjects = ['Mixer', 'Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
+    $excludedProjects = ['Mixer', 'Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Alat Berat', 'Workshop SP2'];
     $projectPlaceholders = implode(', ', array_fill(0, count($excludedProjects), '?'));
     $sql .= " AND LOWER(project) NOT IN ($projectPlaceholders)";
     foreach ($excludedProjects as $projectValue) {
