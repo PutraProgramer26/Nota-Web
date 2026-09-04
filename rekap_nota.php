@@ -179,11 +179,15 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 max-width: 100%;
                 margin: 0 auto;
                 overflow: hidden;
-            }a
-            .hide-project-toko-print,
+            }
+            .hide-project-toko-print {
+                page-break-inside: auto;
+                break-inside: auto;
+            }
             .hide-project-toko-print th,
             .hide-project-toko-print td {
                 page-break-inside: avoid;
+                break-inside: avoid;
             }
             .hide-project-toko-print td {
                 white-space: normal;
@@ -197,8 +201,18 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
             }
             .report-sheet {
                 display: block;
+                page-break-inside: auto;
+                break-inside: auto;
+            }
+
+            .report-closing {
+                margin-top: 10px;
                 page-break-inside: avoid;
                 break-inside: avoid;
+            }
+
+            .total-table {
+                margin-bottom: 0;
             }
             .report-header {
                 text-align: center;
@@ -355,9 +369,9 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                 border: none !important;
             }
             .report-table-block {
-                page-break-inside: avoid;
-                break-inside: avoid;
-                page-break-after: avoid; /* usahakan tabel terakhir tetap bersama tanda tangan jika memungkinkan */
+                page-break-inside: auto;
+                break-inside: auto;
+                page-break-after: auto;
             }
             .card-body { 
                 padding: 0 !important; 
@@ -398,7 +412,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Nama Project</label>
-                        <select name="project" class="form-select">
+                            <select name="project" class="form-select">
                             <option value="">Semua Project</option>
                             <?php while ($row = mysqli_fetch_assoc($projectList)) : ?>
                                 <option value="<?php echo htmlspecialchars($row['project']); ?>" <?php echo $selectedProject === $row['project'] ? 'selected' : ''; ?>>
@@ -534,31 +548,34 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
-                                <tr class="total-row">
-                                    <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL :</td>
-                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
-                                <tr class="total-row">
-                                    <td colspan="6" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
-                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr class="total-row" style="background-color: #fff3cd; font-weight: bold;">
-                                    <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
-                                    <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <?php endif; ?>
                             <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-                </div>
-            </div>
+            <div class="report-closing">
+                <table class="total-table">
+                    <tbody>
+                        <tr class="total-row">
+                            <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL :</td>
+                            <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($grandTotal, 0, '.', ',')); ?></td>
+                            <td></td>
+                        </tr>
+                        <?php if ($selectedToko === 'Cahaya Timika' && $ppn > 0) : ?>
+                        <tr class="total-row">
+                            <td colspan="6" style="text-align: right; padding-right: 5px;">PPN 11% :</td>
+                            <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($ppn, 0, '.', ',')); ?></td>
+                            <td></td>
+                        </tr>
+                        <tr class="total-row" style="background-color: #fff3cd; font-weight: bold;">
+                            <td colspan="6" style="text-align: right; padding-right: 5px;">TOTAL KESELURUHAN (Grand Total + PPN) :</td>
+                            <td class="number-cell" style="min-width: 130px;">Rp <?php echo htmlspecialchars(number_format($totalAkhir, 0, '.', ',')); ?></td>
+                            <td></td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
 
             <div class="signature-wrapper">
     <?php
@@ -581,6 +598,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
     }
     ?>
 </div>
+        </div>
         </div>
         </div>
     </div>
