@@ -8,7 +8,15 @@ if (!isset($_SESSION['user_id'])) {
 include 'koneksi.php';
 
 function formatPrintProjectName($projectName) {
-    return strtolower(trim((string)$projectName)) === 'rumah karitas' ? 'Mess Karitas' : $projectName;
+    $projectName = (string)$projectName;
+    $printProjectNames = [
+        'rumah karitas' => 'Mess Karitas',
+        'petakan waker' => 'Mess Waker',
+        'rumah petakan panjat tebing' => 'Mess Panjat Tebing',
+        'sirkuit iwaka' => 'Gudang Iwaka',
+    ];
+
+    return $printProjectNames[strtolower(trim($projectName))] ?? $projectName;
 }
 
 $selectedToko = $_GET['toko'] ?? '';
