@@ -12,7 +12,7 @@ function formatPrintProjectName($projectName) {
     $printProjectNames = [
         'rumah karitas' => 'Mess Karitas',
         'petakan waker' => 'Mess Waker',
-        'rumah petakan panjat tebing' => 'Mess Panjat Tebing',
+        'petakan panjat tebing' => 'Mess Panjat Tebing',
         'sirkuit iwaka' => 'Gudang Iwaka',
     ];
 
