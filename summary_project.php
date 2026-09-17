@@ -20,10 +20,10 @@ function formatPrintProjectName($projectName) {
     return $printProjectNames[strtolower(trim($projectName))] ?? $projectName;
 }
 
-$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Project'));
-$projectCategories = ['Mixer', 'Internal', 'Project'];
+$selectedProjectCategory = trim((string)($_GET['project_category'] ?? 'Internal'));
+$projectCategories = ['Internal', 'Project', 'Alat Berat'];
 if (!in_array($selectedProjectCategory, $projectCategories, true)) {
-    $selectedProjectCategory = 'Project';
+    $selectedProjectCategory = 'Internal';
 }
 $selectedToko = trim((string)($_GET['toko'] ?? ''));
 $selectedBulan = trim((string)($_GET['bulan'] ?? ''));
@@ -34,12 +34,8 @@ $sql = "SELECT id, no_register, nama_barang, harga_barang, jumlah_barang, satuan
 $params = [$selectedKategori];
 $types = 's';
 
-if ($selectedProjectCategory === 'Mixer') {
-    $sql .= " AND LOWER(project) = LOWER(?)";
-    $params[] = 'Mixer';
-    $types .= 's';
-} elseif ($selectedProjectCategory === 'Internal') {
-    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Alat Berat', 'Workshop SP2'];
+if ($selectedProjectCategory === 'Internal') {
+    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
     $projectPlaceholders = implode(', ', array_fill(0, count($internalProjects), '?'));
     $sql .= " AND LOWER(project) IN ($projectPlaceholders)";
     foreach ($internalProjects as $projectValue) {
@@ -47,13 +43,17 @@ if ($selectedProjectCategory === 'Mixer') {
         $types .= 's';
     }
 } elseif ($selectedProjectCategory === 'Project') {
-    $excludedProjects = ['Mixer', 'Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Alat Berat', 'Workshop SP2'];
+    $excludedProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2', 'Alat Berat'];
     $projectPlaceholders = implode(', ', array_fill(0, count($excludedProjects), '?'));
     $sql .= " AND LOWER(project) NOT IN ($projectPlaceholders)";
     foreach ($excludedProjects as $projectValue) {
         $params[] = $projectValue;
         $types .= 's';
     }
+} elseif ($selectedProjectCategory === 'Alat Berat') {
+    $sql .= " AND LOWER(project) = LOWER(?)";
+    $params[] = 'Alat Berat';
+    $types .= 's';
 }
 
 if ($selectedToko !== '') {
