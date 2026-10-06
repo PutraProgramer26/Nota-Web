@@ -35,7 +35,7 @@ $params = [$selectedKategori];
 $types = 's';
 
 if ($selectedProjectCategory === 'Internal') {
-    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2'];
+    $internalProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2', 'Sirkuit Iwaka', 'Gudang Iwaka'];
     $projectPlaceholders = implode(', ', array_fill(0, count($internalProjects), '?'));
     $sql .= " AND LOWER(project) IN ($projectPlaceholders)";
     foreach ($internalProjects as $projectValue) {
@@ -43,7 +43,7 @@ if ($selectedProjectCategory === 'Internal') {
         $types .= 's';
     }
 } elseif ($selectedProjectCategory === 'Project') {
-    $excludedProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2', 'Alat Berat'];
+    $excludedProjects = ['Rumah Karitas', 'Mess Karitas', 'Petakan Panjat Tebing', 'Mess Panjat Tebing', 'Petakan Waker', 'Mess Waker', 'Workshop SP2', 'Sirkuit Iwaka', 'Gudang Iwaka', 'Alat Berat'];
     $projectPlaceholders = implode(', ', array_fill(0, count($excludedProjects), '?'));
     $sql .= " AND LOWER(project) NOT IN ($projectPlaceholders)";
     foreach ($excludedProjects as $projectValue) {
