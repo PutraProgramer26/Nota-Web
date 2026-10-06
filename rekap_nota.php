@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+function formatQuantityValue($value) {
+    $formattedValue = number_format((float)$value, 3, ',', '.');
+    return rtrim(rtrim($formattedValue, '0'), ',');
+}
+
 function formatPrintProjectName($projectName) {
     $projectName = (string)$projectName;
     $printProjectNames = [
@@ -547,7 +552,7 @@ $bulanNamaCetak = $bulanIndonesia[$bulanYearCetak] ?? '';
                                                 <td class="toko-column" rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
                                             <?php endif; ?>
                                             <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
-                                            <td class="center-cell"><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
+                                            <td class="center-cell"><?php echo htmlspecialchars(formatQuantityValue($item['jumlah_barang'] ?? 0)); ?> <?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
                                             <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
                                             <td class="number-cell">Rp <?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>
                                             <?php if ($index === 0) : ?>

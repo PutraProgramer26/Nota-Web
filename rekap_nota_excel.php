@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'koneksi.php';
 
+function formatQuantityValue($value) {
+    $formattedValue = number_format((float)$value, 3, ',', '.');
+    return rtrim(rtrim($formattedValue, '0'), ',');
+}
+
 $selectedToko = $_GET['toko'] ?? '';
 $selectedProject = trim((string)($_GET['project'] ?? ''));
 $internalProjectNames = ['rumah karitas', 'mess karitas', 'petakan panjat tebing', 'mess panjat tebing', 'petakan waker', 'mess waker', 'alat berat', 'workshop sp2'];
@@ -165,7 +170,7 @@ $periodeLabel = $selectedBulan !== '' ? $selectedBulan : 'Semua Periode';
                             <td rowspan="<?php echo $rowspan; ?>"><?php echo htmlspecialchars($summary['nama_toko'] ?: '-'); ?></td>
                         <?php endif; ?>
                         <td><?php echo htmlspecialchars($item['nama_barang'] ?: '-'); ?></td>
-                        <td><?php echo htmlspecialchars($item['jumlah_barang'] ?? 0); ?></td>
+                        <td><?php echo htmlspecialchars(formatQuantityValue($item['jumlah_barang'] ?? 0)); ?></td>
                         <td><?php echo htmlspecialchars($item['satuan_barang'] ?: '-'); ?></td>
                         <td class="number-cell"><?php echo htmlspecialchars(number_format($item['harga_barang'] ?? 0, 0, '.', ',')); ?></td>
                         <td class="number-cell"><?php echo htmlspecialchars(number_format($item['total_harga'] ?? 0, 0, '.', ',')); ?></td>

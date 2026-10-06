@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tbody>
                                         <tr>
                                     <td><input type="text" name="nama_barang[]" class="form-control" /></td>
-                                    <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,-]+" placeholder="Contoh: 1,2" /></td>
+                                    <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,]+" placeholder="Contoh: 1,5" /></td>
                                     <td><input type="text" name="satuan[]" class="form-control" /></td>
                                     <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                                     <td>
@@ -314,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><input type="text" name="nama_barang[]" class="form-control" /></td>
-                <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,-]+" placeholder="Contoh: 1,2" /></td>
+                <td><input type="text" name="qty[]" class="form-control" inputmode="decimal" pattern="[0-9.,]+" placeholder="Contoh: 1,5" /></td>
                 <td><input type="text" name="satuan[]" class="form-control" /></td>
                 <td><input type="number" name="harga_satuan[]" class="form-control harga-satuan" min="0" step="0.01" /></td>
                 <td>
@@ -354,7 +354,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return 0;
             }
 
-            return parseFloat(String(value).replace(',', '.')) || 0;
+            let normalizedValue = String(value).trim().replace(/\s/g, '');
+            const lastComma = normalizedValue.lastIndexOf(',');
+            const lastDot = normalizedValue.lastIndexOf('.');
+
+            if (lastComma !== -1 && lastDot !== -1) {
+                if (lastComma > lastDot) {
+                    normalizedValue = normalizedValue.replace(/\./g, '').replace(',', '.');
+                } else {
+                    normalizedValue = normalizedValue.replace(/,/g, '');
+                }
+            } else if (lastComma !== -1) {
+                normalizedValue = normalizedValue.replace(',', '.');
+            }
+
+            return parseFloat(normalizedValue) || 0;
         }
 
         function updateTotalBelanja() {
